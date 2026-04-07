@@ -185,13 +185,21 @@ card.classList.add("active");
 
 selectedPlan=plan;
 
+generateQuote();
+
 }
 
 
 /* LOAD PRICING */
 
 let pricing=JSON.parse(localStorage.getItem("friskaPricing"));
+document.addEventListener("DOMContentLoaded", function(){
 
+document.querySelectorAll("input").forEach(el=>{
+el.addEventListener("change", generateQuote);
+});
+
+});
 if(!pricing){
 
 alert("Please configure pricing in admin.html");
@@ -239,6 +247,8 @@ travelMode:"DRIVING"
 const element=response.rows[0].elements[0];
 
 distance=element.distance.value/1000;
+
+generateQuote();
 
 });
 
