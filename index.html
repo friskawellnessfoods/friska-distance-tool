@@ -165,6 +165,7 @@ text-align:center;
 <input type="tel" inputmode="numeric" pattern="[0-9]*"
 id="clientPhone"
 placeholder="Enter phone number"
+oninput="phoneWatcher()"
 maxlength="10">
 </div>
 
@@ -196,7 +197,24 @@ document.getElementById("mealSection").classList.remove("hidden");
 
 }
 
+function phoneWatcher(){
 
+let phoneField=document.getElementById("clientPhone");
+let phone=phoneField.value.trim();
+
+if(phone.length===10){
+
+phoneField.blur();          // removes keyboard
+phoneField.disabled=true;   // freezes textbox
+
+leadSent=false;
+
+generateQuote();
+
+}
+
+}
+  
 /* MEALS */
 
 function checkMeals(){
@@ -353,7 +371,13 @@ let morning=document.getElementById("morning").checked;
 let afternoon=document.getElementById("afternoon").checked;
 let evening=document.getElementById("evening").checked;
 
-let duration=document.querySelector('input[name="duration"]:checked').value;
+let durationEl=document.querySelector('input[name="duration"]:checked');
+
+if(!durationEl){
+return;
+}
+
+let duration=durationEl.value;
 
 let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
 let dur=duration+"_";
