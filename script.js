@@ -1,8 +1,8 @@
 let autocomplete;
 
 const kitchen = {
-lat: 0,
-lng: 0
+lat: 17.4239,
+lng: 78.4738
 };
 
 function initAutocomplete(){
