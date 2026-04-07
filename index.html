@@ -163,7 +163,6 @@ margin-top:20px;
 
 </div>
 
-<button onclick="generateQuote()">Generate Quote</button>
 
 <div id="quoteResult"></div>
 
@@ -258,7 +257,13 @@ generateQuote();
 /* QUOTE */
 
 function generateQuote(){
+if(distance == 0){
 
+document.getElementById("quoteResult").innerHTML =
+"<div style='text-align:center;color:#777;margin-top:10px'>Enter delivery location to see price</div>";
+
+return;
+}
 let breakfast=document.getElementById("breakfast").checked;
 let lunch=document.getElementById("lunch").checked;
 let dinner=document.getElementById("dinner").checked;
