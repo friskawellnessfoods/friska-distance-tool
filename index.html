@@ -82,7 +82,8 @@ text-align:center;
 
 <h2>Friska Wellness Quote</h2>
 
-<!-- STEP 1 PLAN -->
+
+<!-- PLAN -->
 
 <div class="section" id="planSection">
 
@@ -99,7 +100,7 @@ text-align:center;
 </div>
 
 
-<!-- STEP 2 MEALS -->
+<!-- MEALS -->
 
 <div class="section hidden" id="mealSection">
 
@@ -115,7 +116,7 @@ text-align:center;
 </div>
 
 
-<!-- STEP 3 DURATION -->
+<!-- DURATION -->
 
 <div class="section hidden" id="durationSection">
 
@@ -129,7 +130,7 @@ text-align:center;
 </div>
 
 
-<!-- STEP 4 DELIVERY SLOT -->
+<!-- DELIVERY SLOT -->
 
 <div class="section hidden" id="slotSection">
 
@@ -142,7 +143,7 @@ text-align:center;
 </div>
 
 
-<!-- STEP 5 LOCATION -->
+<!-- LOCATION -->
 
 <div class="section hidden" id="locationSection">
 
@@ -153,7 +154,7 @@ text-align:center;
 </div>
 
 
-<!-- STEP 6 CONTACT -->
+<!-- CONTACT -->
 
 <div class="section hidden" id="contactSection">
 
@@ -166,8 +167,6 @@ text-align:center;
 </div>
 
 
-<!-- PRICE -->
-
 <div id="quoteResult"></div>
 
 </div>
@@ -178,6 +177,7 @@ text-align:center;
 
 let selectedPlan="";
 let distance=0;
+let leadSent=false;
 
 
 /* PLAN */
@@ -253,14 +253,7 @@ generateQuote();
 
 function checkContact(){
 
-let name=document.getElementById("clientName").value;
-let phone=document.getElementById("clientPhone").value;
-
-if(name && phone){
-
 generateQuote();
-
-}
 
 }
 
@@ -313,16 +306,19 @@ generateQuote();
 }
 
 
-/* QUOTE */
+/* LOAD PRICING */
 
 let pricing=JSON.parse(localStorage.getItem("friskaPricing"));
 
+
+/* QUOTE */
+
 function generateQuote(){
 
-let name=document.getElementById("clientName").value;
-let phone=document.getElementById("clientPhone").value;
+let name=document.getElementById("clientName").value.trim();
+let phone=document.getElementById("clientPhone").value.trim();
 
-if(distance==0 || !name || !phone){
+if(distance==0 || !name || phone.length!==10){
 
 document.getElementById("quoteResult").innerHTML="";
 return;
@@ -351,13 +347,11 @@ let foodPerDay=0;
 /* BREAKFAST */
 
 if(breakfast){
-
 foodPerDay+=Number(pricing[prefix+dur+"breakfast"]);
-
 }
 
 
-/* LUNCH DINNER */
+/* MEAL */
 
 let mealCount=0;
 
@@ -365,39 +359,29 @@ if(lunch) mealCount++;
 if(dinner) mealCount++;
 
 if(mealCount==1){
-
 foodPerDay+=Number(pricing[prefix+dur+"lunch"]);
-
 }
 
 if(mealCount==2){
-
 foodPerDay+=Number(pricing[prefix+dur+"combo"])*2;
-
 }
 
 
 /* SNACK */
 
 if(snack){
-
 foodPerDay+=Number(pricing[prefix+dur+"snack"]);
-
 }
 
 
 /* JUICES */
 
 if(juice1){
-
 foodPerDay+=Number(pricing[prefix+dur+"juice1"]);
-
 }
 
 if(juice2){
-
 foodPerDay+=Number(pricing[prefix+dur+"juice2"])*2;
-
 }
 
 
@@ -437,10 +421,55 @@ let gst=foodTotal*(pricing.gst/100);
 let total=foodTotal+gst+deliveryTotal;
 
 
+/* DISPLAY PRICE */
+
 document.getElementById("quoteResult").innerHTML=
 
 "<div style='font-size:28px;font-weight:700;color:#0a1a6e'>₹"+total.toFixed(0)+"</div>"+
 "<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery charges & taxes</div>";
+
+
+
+/* SAVE LEAD */
+
+if(!leadSent){
+
+leadSent=true;
+
+let meals=[];
+if(breakfast) meals.push("Breakfast");
+if(lunch) meals.push("Lunch");
+if(dinner) meals.push("Dinner");
+if(snack) meals.push("Snack");
+if(juice1) meals.push("1 Juice");
+if(juice2) meals.push("2 Juices");
+
+let slots=[];
+if(morning) slots.push("Morning");
+if(afternoon) slots.push("Afternoon");
+if(evening) slots.push("Evening");
+
+fetch("https://script.google.com/macros/s/AKfycbzbQCn5EleZYDyDeNsYG8JwV0IjxyZMzYu0qBbgz0DTw2YDwuE3xWW8CrtW_wZxEMo/exec",{
+
+method:"POST",
+
+body:JSON.stringify({
+
+name:name,
+phone:phone,
+plan:selectedPlan=="nb" ? "Nutri Balance":"High Protein",
+meals:meals.join(", "),
+duration:duration,
+slots:slots.join(", "),
+location:document.getElementById("location").value,
+distance:roundedDistance,
+price:total
+
+})
+
+});
+
+}
 
 }
 
