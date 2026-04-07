@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Friska Distance Tool</title>
+
+<style>
+
+body{
+font-family:system-ui;
+background:#f4f6fb;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:10px;
+width:400px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+
+h2{
+margin-top:0;
+}
+
+input{
+width:100%;
+padding:12px;
+font-size:16px;
+margin-top:10px;
+}
+
+button{
+margin-top:15px;
+padding:12px;
+width:100%;
+background:#0a1a6e;
+color:white;
+border:none;
+font-size:16px;
+cursor:pointer;
+}
+
+#result{
+margin-top:20px;
+font-size:18px;
+font-weight:600;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Friska Distance Check</h2>
+
+<input id="address" placeholder="Enter delivery location">
+
+<button onclick="calculateDistance()">Check Distance</button>
+
+<div id="result"></div>
+
+</div>
+
+<script src="script.js"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+
+</body>
+</html>
