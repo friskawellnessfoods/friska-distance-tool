@@ -204,12 +204,8 @@ let phone=phoneField.value.trim();
 
 if(phone.length===10){
 
-phoneField.blur();          // removes keyboard
-phoneField.disabled=true;   // freezes textbox
-
-leadSent=false;
-
-generateQuote();
+phoneField.blur();     // close keyboard only
+generateQuote();       // run calculation
 
 }
 
