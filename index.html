@@ -311,7 +311,18 @@ generateQuote();
 
 }
 
+/* MOBILE SAFE PHONE CHECK */
 
+setInterval(function(){
+
+let phone=document.getElementById("clientPhone").value.trim();
+
+if(phone.length===10){
+generateQuote();
+}
+
+},400);
+  
 /* LOAD PRICING */
 
 let pricing=JSON.parse(localStorage.getItem("friskaPricing"));
