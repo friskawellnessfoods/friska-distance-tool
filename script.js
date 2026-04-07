@@ -1,56 +1,54 @@
 let autocomplete;
 let selectedPlace = null;
 
-const kitchen = new google.maps.LatLng(17.452623115758335,78.41967516576499);
+const kitchen = {
+  lat: 17.452623115758335,
+  lng: 78.41967516576499
+};
 
 function initAutocomplete(){
 
-const input = document.getElementById("address");
+  const input = document.getElementById("address");
 
-autocomplete = new google.maps.places.Autocomplete(input);
+  autocomplete = new google.maps.places.Autocomplete(input);
 
-autocomplete.addListener("place_changed", function(){
-selectedPlace = autocomplete.getPlace();
-});
+  autocomplete.addListener("place_changed", function(){
+    selectedPlace = autocomplete.getPlace();
+  });
 
 }
 
 function calculateDistance(){
 
-if(!selectedPlace || !selectedPlace.geometry){
-alert("Please select address from dropdown");
-return;
-}
+  if(!selectedPlace || !selectedPlace.geometry){
+    alert("Please select address from dropdown");
+    return;
+  }
 
-const destination = selectedPlace.geometry.location;
+  const destination = selectedPlace.geometry.location;
 
-const service = new google.maps.DistanceMatrixService();
+  const service = new google.maps.DistanceMatrixService();
 
-service.getDistanceMatrix({
+  service.getDistanceMatrix({
 
-origins:[kitchen],
-destinations:[destination],
-travelMode: google.maps.TravelMode.DRIVING,
-unitSystem: google.maps.UnitSystem.METRIC
+    origins:[kitchen],
+    destinations:[destination],
+    travelMode: "DRIVING",
+    unitSystem: google.maps.UnitSystem.METRIC
 
-}, function(response,status){
+  }, function(response,status){
 
-if(status !== "OK"){
-alert("Error calculating distance");
-return;
-}
+    if(status !== "OK"){
+      alert("Error calculating distance");
+      return;
+    }
 
-const element = response.rows[0].elements[0];
+    const element = response.rows[0].elements[0];
 
-if(element.status !== "OK"){
-document.getElementById("result").innerHTML = "Route not found";
-return;
-}
+    document.getElementById("result").innerHTML =
+      "Distance: " + element.distance.text +
+      "<br>Travel Time: " + element.duration.text;
 
-document.getElementById("result").innerHTML =
-"Distance: " + element.distance.text +
-"<br>Travel Time: " + element.duration.text;
-
-});
+  });
 
 }
