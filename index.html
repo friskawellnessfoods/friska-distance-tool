@@ -370,13 +370,13 @@ let morning=document.getElementById("morning").checked;
 let afternoon=document.getElementById("afternoon").checked;
 let evening=document.getElementById("evening").checked;
 
-let durationEl=document.querySelector('input[name="duration"]:checked');
+let durationElement = document.querySelector('input[name="duration"]:checked');
 
-if(!durationEl){
+if(!durationElement){
 return;
 }
 
-let duration=durationEl.value;
+let duration = durationElement.value;
 
 let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
 let dur=duration+"_";
