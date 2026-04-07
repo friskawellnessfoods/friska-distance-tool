@@ -338,8 +338,8 @@ if(afternoon) trips++;
 
 if(evening) trips++;
 
-let deliveryPerTrip=distance*Number(pricing.delivery);
-
+let roundedDistance = Math.round(distance);
+let deliveryPerTrip = roundedDistance * Number(pricing.delivery);
 let deliveryTotal=deliveryPerTrip*trips*days;
 
 /* GST */
@@ -350,14 +350,15 @@ let gst=foodTotal*(pricing.gst/100);
 
 let total=foodTotal+gst+deliveryTotal;
 
-document.getElementById("quoteResult").innerHTML=
+document.getElementById("quoteResult").innerHTML =
 
-"Distance: "+distance.toFixed(1)+" km"+
-"<br>Food: ₹"+foodTotal+
-"<br>GST: ₹"+gst.toFixed(2)+
-"<br>Delivery: ₹"+deliveryTotal.toFixed(2)+
-"<br><b>Total: ₹"+total.toFixed(2)+"</b>";
+"<div style='text-align:center;margin-top:10px'>" +
 
+"<div style='font-size:28px;font-weight:700;color:#0a1a6e'>₹" + total.toFixed(0) + "</div>" +
+
+"<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery charges & taxes</div>" +
+
+"</div>";
 }
 
 </script>
