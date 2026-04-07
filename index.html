@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html>
 <head>
 
@@ -19,16 +19,12 @@ justify-content:center;
 }
 
 .container{
-max-width:500px;
+max-width:520px;
 width:100%;
 background:white;
 padding:25px;
 border-radius:12px;
 box-shadow:0 10px 30px rgba(0,0,0,0.08);
-}
-
-h2{
-margin-top:0;
 }
 
 .section{
@@ -38,7 +34,6 @@ margin-top:25px;
 .plan-grid{
 display:flex;
 gap:15px;
-margin-top:10px;
 }
 
 .plan-card{
@@ -47,7 +42,6 @@ border-radius:10px;
 overflow:hidden;
 cursor:pointer;
 border:2px solid transparent;
-transition:0.2s;
 }
 
 .plan-card img{
@@ -57,11 +51,6 @@ display:block;
 
 .plan-card.active{
 border:2px solid #0a1a6e;
-}
-
-.plan-card:hover{
-transform:scale(1.03);
-box-shadow:0 5px 15px rgba(0,0,0,0.15);
 }
 
 label{
@@ -76,7 +65,7 @@ margin-top:8px;
 }
 
 button{
-margin-top:30px;
+margin-top:25px;
 width:100%;
 padding:14px;
 background:#0a1a6e;
@@ -87,29 +76,23 @@ border-radius:8px;
 cursor:pointer;
 }
 
-.hidden{
-display:none;
-}
-
-.days{
-margin-top:10px;
+#quoteResult{
+margin-top:20px;
+font-size:18px;
+font-weight:600;
 }
 
 </style>
 
 </head>
 
-
 <body>
 
 <div class="container">
 
-<h2>Welcome to Friska Wellness</h2>
+<h2>Friska Wellness Quote</h2>
 
-<p>Select your plan to generate a quote.</p>
-
-
-<!-- PLAN SELECTION -->
+<!-- PLAN -->
 
 <div class="section">
 
@@ -117,11 +100,11 @@ margin-top:10px;
 
 <div class="plan-grid">
 
-<div class="plan-card" onclick="selectPlan(this)">
+<div class="plan-card" onclick="selectPlan(this,'nb')">
 <img src="nutri_balance.jpeg">
 </div>
 
-<div class="plan-card" onclick="selectPlan(this)">
+<div class="plan-card" onclick="selectPlan(this,'hp')">
 <img src="high_protein.jpeg">
 </div>
 
@@ -129,22 +112,33 @@ margin-top:10px;
 
 </div>
 
-
 <!-- MEALS -->
 
 <div class="section">
 
 <h3>Select Meals</h3>
 
-<label><input type="checkbox"> Breakfast</label>
-<label><input type="checkbox"> Lunch</label>
-<label><input type="checkbox"> Dinner</label>
-<label><input type="checkbox"> Snack</label>
-<label><input type="checkbox"> 1x Juice</label>
-<label><input type="checkbox"> 2x Juices</label>
+<label><input type="checkbox" id="breakfast"> Breakfast</label>
+<label><input type="checkbox" id="lunch"> Lunch</label>
+<label><input type="checkbox" id="dinner"> Dinner</label>
+<label><input type="checkbox" id="snack"> Snack</label>
+<label><input type="checkbox" id="juice1"> 1 Juice</label>
+<label><input type="checkbox" id="juice2"> 2 Juices</label>
 
 </div>
 
+<!-- DURATION -->
+
+<div class="section">
+
+<h3>Duration</h3>
+
+<label><input type="radio" name="duration" value="d"> 1 Day</label>
+<label><input type="radio" name="duration" value="w"> 1 Week</label>
+<label><input type="radio" name="duration" value="m"> 26 Days</label>
+<label><input type="radio" name="duration" value="q"> 3 Months</label>
+
+</div>
 
 <!-- DELIVERY SLOT -->
 
@@ -152,138 +146,217 @@ margin-top:10px;
 
 <h3>Delivery Slot</h3>
 
-<label><input type="checkbox"> Morning</label>
-<label><input type="checkbox"> Afternoon</label>
-<label><input type="checkbox"> Evening</label>
+<label><input type="checkbox" id="morning"> Morning</label>
+<label><input type="checkbox" id="afternoon"> Afternoon</label>
+<label><input type="checkbox" id="evening"> Evening</label>
 
 </div>
 
-
-<!-- MULTIPLE LOCATION OPTION -->
-
-<div class="section">
-
-<label>
-<input type="checkbox" id="multiToggle" onchange="toggleLocations()">
-Multiple delivery locations
-</label>
-
-</div>
-
-
-<!-- LOCATION 1 -->
+<!-- LOCATION -->
 
 <div class="section">
 
 <h3>Delivery Location</h3>
 
-<input id="location1" type="text" placeholder="Enter delivery location">
+<input id="location" type="text" placeholder="Enter delivery location">
 
 </div>
 
+<button onclick="generateQuote()">Generate Quote</button>
 
-<!-- MULTI LOCATION SECTION -->
-
-<div id="multiSection" class="hidden">
-
-
-<div class="section">
-
-<h3>Location 1 Days</h3>
-
-<div class="days">
-
-<label><input type="checkbox"> Mon</label>
-<label><input type="checkbox"> Tue</label>
-<label><input type="checkbox"> Wed</label>
-<label><input type="checkbox"> Thu</label>
-<label><input type="checkbox"> Fri</label>
-<label><input type="checkbox"> Sat</label>
-
-</div>
-
-</div>
-
-
-
-<div class="section">
-
-<h3>Location 2</h3>
-
-<input id="location2" type="text" placeholder="Enter second location">
-
-</div>
-
-
-
-<div class="section">
-
-<h3>Location 2 Days</h3>
-
-<div class="days">
-
-<label><input type="checkbox"> Mon</label>
-<label><input type="checkbox"> Tue</label>
-<label><input type="checkbox"> Wed</label>
-<label><input type="checkbox"> Thu</label>
-<label><input type="checkbox"> Fri</label>
-<label><input type="checkbox"> Sat</label>
-
-</div>
-
-</div>
-
-</div>
-
-
-<button>Generate Quote</button>
+<div id="quoteResult"></div>
 
 </div>
 
 
 <script>
 
-function selectPlan(card){
+let selectedPlan="";
+let distance=0;
+
+/* PLAN SELECT */
+
+function selectPlan(card,plan){
 
 document.querySelectorAll(".plan-card").forEach(c=>c.classList.remove("active"));
 
 card.classList.add("active");
 
-}
-
-
-
-function toggleLocations(){
-
-let section=document.getElementById("multiSection");
-
-if(document.getElementById("multiToggle").checked){
-
-section.classList.remove("hidden");
-
-}else{
-
-section.classList.add("hidden");
-
-}
+selectedPlan=plan;
 
 }
 
 
+/* LOAD PRICING */
 
-let autocomplete1;
-let autocomplete2;
+let pricing=JSON.parse(localStorage.getItem("friskaPricing"));
+
+if(!pricing){
+
+alert("Please configure pricing in admin.html");
+
+}
+
+
+/* AUTOCOMPLETE */
+
+let autocomplete;
 
 function initAutocomplete(){
 
-const input1=document.getElementById("location1");
-autocomplete1=new google.maps.places.Autocomplete(input1);
+const input=document.getElementById("location");
 
-const input2=document.getElementById("location2");
+autocomplete=new google.maps.places.Autocomplete(input);
 
-if(input2){
-autocomplete2=new google.maps.places.Autocomplete(input2);
+autocomplete.addListener("place_changed",function(){
+
+const place=autocomplete.getPlace();
+
+calculateDistance(place.geometry.location);
+
+});
+
 }
+
+
+/* DISTANCE */
+
+function calculateDistance(destination){
+
+const kitchen={lat:17.452623115758335,lng:78.41967516576499};
+
+const service=new google.maps.DistanceMatrixService();
+
+service.getDistanceMatrix({
+
+origins:[kitchen],
+destinations:[destination],
+travelMode:"DRIVING"
+
+},function(response,status){
+
+const element=response.rows[0].elements[0];
+
+distance=element.distance.value/1000;
+
+});
+
+}
+
+
+/* QUOTE */
+
+function generateQuote(){
+
+let breakfast=document.getElementById("breakfast").checked;
+let lunch=document.getElementById("lunch").checked;
+let dinner=document.getElementById("dinner").checked;
+let snack=document.getElementById("snack").checked;
+let juice1=document.getElementById("juice1").checked;
+let juice2=document.getElementById("juice2").checked;
+
+let morning=document.getElementById("morning").checked;
+let afternoon=document.getElementById("afternoon").checked;
+let evening=document.getElementById("evening").checked;
+
+let duration=document.querySelector('input[name="duration"]:checked').value;
+
+let prefix=selectedPlan+"_";
+let dur=duration+"_";
+
+let foodPerDay=0;
+
+/* BREAKFAST */
+
+if(breakfast){
+
+foodPerDay+=Number(pricing[prefix+dur+"breakfast"]);
+
+}
+
+/* LUNCH DINNER */
+
+let mealCount=0;
+
+if(lunch) mealCount++;
+
+if(dinner) mealCount++;
+
+if(mealCount==1){
+
+foodPerDay+=Number(pricing[prefix+dur+"meal"]);
+
+}
+
+if(mealCount==2){
+
+foodPerDay+=Number(pricing[prefix+dur+"combo"])*2;
+
+}
+
+/* SNACK */
+
+if(snack){
+
+foodPerDay+=Number(pricing[prefix+dur+"snack"]);
+
+}
+
+/* JUICES */
+
+if(juice1){
+
+foodPerDay+=Number(pricing[prefix+dur+"juice1"]);
+
+}
+
+if(juice2){
+
+foodPerDay+=Number(pricing[prefix+dur+"juice2"])*2;
+
+}
+
+/* DAYS */
+
+let days=1;
+
+if(duration=="w") days=6;
+
+if(duration=="m") days=26;
+
+if(duration=="q") days=78;
+
+let foodTotal=foodPerDay*days;
+
+/* DELIVERY */
+
+let trips=0;
+
+if(morning) trips++;
+
+if(afternoon) trips++;
+
+if(evening) trips++;
+
+let deliveryPerTrip=distance*pricing.delivery;
+
+let deliveryTotal=deliveryPerTrip*trips*days;
+
+/* GST */
+
+let gst=foodTotal*(pricing.gst/100);
+
+/* FINAL */
+
+let total=foodTotal+gst+deliveryTotal;
+
+document.getElementById("quoteResult").innerHTML=
+
+"Distance: "+distance.toFixed(1)+" km"+
+"<br>Food: ₹"+foodTotal+
+"<br>GST: ₹"+gst.toFixed(2)+
+"<br>Delivery: ₹"+deliveryTotal.toFixed(2)+
+"<br><b>Total: ₹"+total.toFixed(2)+"</b>";
 
 }
 
@@ -291,7 +364,6 @@ autocomplete2=new google.maps.places.Autocomplete(input2);
 
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7m4j7B6xMkC1EfS9aekBW-R6CdLatoVE&libraries=places&callback=initAutocomplete" async defer></script>
-
 
 </body>
 </html>
