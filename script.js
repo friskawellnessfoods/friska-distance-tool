@@ -15,8 +15,6 @@ selectedPlace = autocomplete.getPlace();
 
 }
 
-window.onload = initAutocomplete;
-
 function calculateDistance(){
 
 if(!selectedPlace || !selectedPlace.geometry){
