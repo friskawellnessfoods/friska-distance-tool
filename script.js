@@ -1,9 +1,7 @@
 let autocomplete;
+let selectedPlace = null;
 
-const kitchen = {
-lat: 17.45262183639123,
-lng: 78.4196724835561
-};
+const kitchen = new google.maps.LatLng(17.452623115758335,78.41967516576499);
 
 function initAutocomplete(){
 
@@ -11,23 +9,22 @@ const input = document.getElementById("address");
 
 autocomplete = new google.maps.places.Autocomplete(input);
 
+autocomplete.addListener("place_changed", function(){
+selectedPlace = autocomplete.getPlace();
+});
+
 }
 
 window.onload = initAutocomplete;
 
 function calculateDistance(){
 
-const place = autocomplete.getPlace();
-
-if(!place || !place.geometry){
+if(!selectedPlace || !selectedPlace.geometry){
 alert("Please select address from dropdown");
 return;
 }
 
-const destination = {
-lat: place.geometry.location.lat(),
-lng: place.geometry.location.lng()
-};
+const destination = selectedPlace.geometry.location;
 
 const service = new google.maps.DistanceMatrixService();
 
@@ -35,19 +32,26 @@ service.getDistanceMatrix({
 
 origins:[kitchen],
 destinations:[destination],
-travelMode:"DRIVING"
+travelMode: google.maps.TravelMode.DRIVING,
+unitSystem: google.maps.UnitSystem.METRIC
 
 }, function(response,status){
 
 if(status !== "OK"){
-alert("Distance error");
+alert("Error calculating distance");
 return;
 }
 
-const distanceText = response.rows[0].elements[0].distance.text;
+const element = response.rows[0].elements[0];
+
+if(element.status !== "OK"){
+document.getElementById("result").innerHTML = "Route not found";
+return;
+}
 
 document.getElementById("result").innerHTML =
-"Distance from kitchen: " + distanceText;
+"Distance: " + element.distance.text +
+"<br>Travel Time: " + element.duration.text;
 
 });
 
