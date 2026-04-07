@@ -75,13 +75,11 @@ text-align:center;
 
 </head>
 
-
 <body>
 
 <div class="container">
 
 <h2>Friska Wellness Quote</h2>
-
 
 <!-- PLAN -->
 
@@ -99,7 +97,6 @@ text-align:center;
 
 </div>
 
-
 <!-- MEALS -->
 
 <div class="section hidden" id="mealSection">
@@ -115,22 +112,20 @@ text-align:center;
 
 </div>
 
-
 <!-- DURATION -->
 
 <div class="section hidden" id="durationSection">
 
 <h3>Duration</h3>
 
-<label><input type="radio" name="duration" value="d" onchange="checkDuration()"> 1 Day</label>
+<label><input type="radio" name="duration" value="d" onchange="checkDuration()"> 2 Day Trial</label>
 <label><input type="radio" name="duration" value="w" onchange="checkDuration()"> 1 Week</label>
 <label><input type="radio" name="duration" value="m" onchange="checkDuration()"> 26 Days</label>
 <label><input type="radio" name="duration" value="q" onchange="checkDuration()"> 3 Months</label>
 
 </div>
 
-
-<!-- DELIVERY SLOT -->
+<!-- SLOT -->
 
 <div class="section hidden" id="slotSection">
 
@@ -142,7 +137,6 @@ text-align:center;
 
 </div>
 
-
 <!-- LOCATION -->
 
 <div class="section hidden" id="locationSection">
@@ -153,35 +147,30 @@ text-align:center;
 
 </div>
 
-
 <!-- CONTACT -->
 
 <div class="section hidden" id="contactSection">
 
 <h3>Your Details</h3>
 
-<input type="text" id="clientName" placeholder="Enter your name" oninput="checkContact()">
+<input type="text" id="clientName" placeholder="Enter your name">
 
 <input type="tel" inputmode="numeric" pattern="[0-9]*"
 id="clientPhone"
 placeholder="Enter phone number"
-oninput="phoneWatcher()"
 maxlength="10">
-</div>
 
+</div>
 
 <div id="quoteResult"></div>
 
 </div>
-
-
 
 <script>
 
 let selectedPlan="";
 let distance=0;
 let leadSent=false;
-
 
 /* PLAN */
 
@@ -197,23 +186,6 @@ document.getElementById("mealSection").classList.remove("hidden");
 
 }
 
-function phoneWatcher(){
-
-let phoneField=document.getElementById("clientPhone");
-let phone=phoneField.value.trim();
-
-if(phone.length===10){
-
-phoneField.blur();
-
-setTimeout(function(){
-generateQuote();
-},200);
-
-}
-
-}
-  
 /* MEALS */
 
 function checkMeals(){
@@ -227,26 +199,16 @@ document.getElementById("juice1").checked ||
 document.getElementById("juice2").checked;
 
 if(mealsSelected){
-
 document.getElementById("durationSection").classList.remove("hidden");
-
 }
 
-generateQuote();
-
 }
-
 
 /* DURATION */
 
 function checkDuration(){
-
 document.getElementById("slotSection").classList.remove("hidden");
-
-generateQuote();
-
 }
-
 
 /* SLOT */
 
@@ -258,30 +220,12 @@ document.getElementById("afternoon").checked ||
 document.getElementById("evening").checked;
 
 if(slotSelected){
-
 document.getElementById("locationSection").classList.remove("hidden");
-
-}
-
-generateQuote();
-
-}
-
-
-/* CONTACT */
-
-function checkContact(){
-
-let phone=document.getElementById("clientPhone").value.trim();
-
-if(phone.length===10){
-generateQuote();
 }
 
 }
 
-
-/* GOOGLE LOCATION */
+/* GOOGLE MAPS */
 
 let autocomplete;
 
@@ -300,7 +244,6 @@ calculateDistance(place.geometry.location);
 });
 
 }
-
 
 function calculateDistance(destination){
 
@@ -322,28 +265,26 @@ distance=element.distance.value/1000;
 
 document.getElementById("contactSection").classList.remove("hidden");
 
-generateQuote();
-
 });
 
 }
 
-/* MOBILE SAFE PHONE CHECK */
-
-setInterval(function(){
-
-let phone=document.getElementById("clientPhone").value.trim();
-
-if(phone.length===10){
-generateQuote();
-}
-
-},400);
-  
 /* LOAD PRICING */
 
 let pricing=JSON.parse(localStorage.getItem("friskaPricing"));
 
+/* MOBILE SAFE QUOTE TRIGGER */
+
+document.addEventListener("input", function(){
+
+let name=document.getElementById("clientName").value.trim();
+let phone=document.getElementById("clientPhone").value.trim();
+
+if(phone.length===10 && name){
+generateQuote();
+}
+
+});
 
 /* QUOTE */
 
@@ -353,10 +294,8 @@ let name=document.getElementById("clientName").value.trim();
 let phone=document.getElementById("clientPhone").value.trim();
 
 if(distance==0 || !name || phone.length!==10){
-
 document.getElementById("quoteResult").innerHTML="";
 return;
-
 }
 
 let breakfast=document.getElementById("breakfast").checked;
@@ -370,19 +309,18 @@ let morning=document.getElementById("morning").checked;
 let afternoon=document.getElementById("afternoon").checked;
 let evening=document.getElementById("evening").checked;
 
-let durationElement = document.querySelector('input[name="duration"]:checked');
+let durationElement=document.querySelector('input[name="duration"]:checked');
 
 if(!durationElement){
 return;
 }
 
-let duration = durationElement.value;
+let duration=durationElement.value;
 
 let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
 let dur=duration+"_";
 
 let foodPerDay=0;
-
 
 /* BREAKFAST */
 
@@ -390,8 +328,7 @@ if(breakfast){
 foodPerDay+=Number(pricing[prefix+dur+"breakfast"]);
 }
 
-
-/* MEAL */
+/* MEALS */
 
 let mealCount=0;
 
@@ -406,15 +343,13 @@ if(mealCount==2){
 foodPerDay+=Number(pricing[prefix+dur+"combo"])*2;
 }
 
-
 /* SNACK */
 
 if(snack){
 foodPerDay+=Number(pricing[prefix+dur+"snack"]);
 }
 
-
-/* JUICES */
+/* JUICE */
 
 if(juice1){
 foodPerDay+=Number(pricing[prefix+dur+"juice1"]);
@@ -424,17 +359,15 @@ if(juice2){
 foodPerDay+=Number(pricing[prefix+dur+"juice2"])*2;
 }
 
-
 /* DAYS */
 
-let days=1;
+let days=2;
 
 if(duration=="w") days=6;
 if(duration=="m") days=26;
 if(duration=="q") days=78;
 
 let foodTotal=foodPerDay*days;
-
 
 /* DELIVERY */
 
@@ -450,16 +383,13 @@ let deliveryPerTrip=roundedDistance*Number(pricing.delivery);
 
 let deliveryTotal=deliveryPerTrip*trips*days;
 
-
 /* GST */
 
 let gst=foodTotal*(pricing.gst/100);
 
-
 /* TOTAL */
 
 let total=foodTotal+gst+deliveryTotal;
-
 
 /* DISPLAY PRICE */
 
@@ -467,8 +397,6 @@ document.getElementById("quoteResult").innerHTML=
 
 "<div style='font-size:28px;font-weight:700;color:#0a1a6e'>₹"+total.toFixed(0)+"</div>"+
 "<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery charges & taxes</div>";
-
-
 
 /* SAVE LEAD */
 
@@ -514,7 +442,6 @@ price:total
 }
 
 </script>
-
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7m4j7B6xMkC1EfS9aekBW-R6CdLatoVE&libraries=places&callback=initAutocomplete" async defer></script>
 
