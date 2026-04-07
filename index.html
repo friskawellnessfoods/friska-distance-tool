@@ -1,11 +1,11 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Friska Meal Quote</title>
+<title>Friska Wellness Quote</title>
 
 <style>
 
@@ -19,7 +19,7 @@ justify-content:center;
 }
 
 .container{
-max-width:520px;
+max-width:420px;
 width:100%;
 background:white;
 padding:25px;
@@ -31,17 +31,16 @@ box-shadow:0 10px 30px rgba(0,0,0,0.08);
 margin-top:25px;
 }
 
-.plan-grid{
-display:flex;
-gap:15px;
+.hidden{
+display:none;
 }
 
 .plan-card{
-flex:1;
 border-radius:10px;
 overflow:hidden;
 cursor:pointer;
 border:2px solid transparent;
+margin-top:12px;
 }
 
 .plan-card img{
@@ -58,34 +57,24 @@ display:block;
 margin-top:8px;
 }
 
-input[type="text"]{
+input[type="text"], input[type="tel"]{
 width:100%;
 padding:10px;
 margin-top:8px;
 }
 
-button{
-margin-top:25px;
-width:100%;
-padding:14px;
-background:#0a1a6e;
-color:white;
-border:none;
-font-size:16px;
-border-radius:8px;
-cursor:pointer;
-}
-
 #quoteResult{
+margin-top:20px;
 background:#f8f9ff;
 padding:20px;
 border-radius:10px;
-margin-top:20px;
+text-align:center;
 }
 
 </style>
 
 </head>
+
 
 <body>
 
@@ -93,13 +82,11 @@ margin-top:20px;
 
 <h2>Friska Wellness Quote</h2>
 
-<!-- PLAN -->
+<!-- STEP 1 PLAN -->
 
-<div class="section">
+<div class="section" id="planSection">
 
 <h3>Select Plan</h3>
-
-<div class="plan-grid">
 
 <div class="plan-card" onclick="selectPlan(this,'nb')">
 <img src="nutri_balance.jpeg">
@@ -111,51 +98,53 @@ margin-top:20px;
 
 </div>
 
-</div>
 
-<!-- MEALS -->
+<!-- STEP 2 MEALS -->
 
-<div class="section">
+<div class="section hidden" id="mealSection">
 
 <h3>Select Meals</h3>
 
-<label><input type="checkbox" id="breakfast"> Breakfast</label>
-<label><input type="checkbox" id="lunch"> Lunch</label>
-<label><input type="checkbox" id="dinner"> Dinner</label>
-<label><input type="checkbox" id="snack"> Snack</label>
-<label><input type="checkbox" id="juice1"> 1 Juice</label>
-<label><input type="checkbox" id="juice2"> 2 Juices</label>
+<label><input type="checkbox" id="breakfast" onchange="checkMeals()"> Breakfast</label>
+<label><input type="checkbox" id="lunch" onchange="checkMeals()"> Lunch</label>
+<label><input type="checkbox" id="dinner" onchange="checkMeals()"> Dinner</label>
+<label><input type="checkbox" id="snack" onchange="checkMeals()"> Snack</label>
+<label><input type="checkbox" id="juice1" onchange="checkMeals()"> 1 Juice</label>
+<label><input type="checkbox" id="juice2" onchange="checkMeals()"> 2 Juices</label>
 
 </div>
 
-<!-- DURATION -->
 
-<div class="section">
+<!-- STEP 3 DURATION -->
+
+<div class="section hidden" id="durationSection">
 
 <h3>Duration</h3>
 
-<label><input type="radio" name="duration" value="d"> 1 Day</label>
-<label><input type="radio" name="duration" value="w"> 1 Week(6 days)</label>
-<label><input type="radio" name="duration" value="m"> 1 Month(26 days)</label>
-<label><input type="radio" name="duration" value="q"> 3 Months(78 days)</label>
+<label><input type="radio" name="duration" value="d" onchange="checkDuration()"> 1 Day</label>
+<label><input type="radio" name="duration" value="w" onchange="checkDuration()"> 1 Week</label>
+<label><input type="radio" name="duration" value="m" onchange="checkDuration()"> 26 Days</label>
+<label><input type="radio" name="duration" value="q" onchange="checkDuration()"> 3 Months</label>
 
 </div>
 
-<!-- DELIVERY SLOT -->
 
-<div class="section">
+<!-- STEP 4 DELIVERY SLOT -->
+
+<div class="section hidden" id="slotSection">
 
 <h3>Delivery Slot</h3>
 
-<label><input type="checkbox" id="morning"> Morning</label>
-<label><input type="checkbox" id="afternoon"> Afternoon</label>
-<label><input type="checkbox" id="evening"> Evening</label>
+<label><input type="checkbox" id="morning" onchange="checkSlot()"> Morning</label>
+<label><input type="checkbox" id="afternoon" onchange="checkSlot()"> Afternoon</label>
+<label><input type="checkbox" id="evening" onchange="checkSlot()"> Evening</label>
 
 </div>
 
-<!-- LOCATION -->
 
-<div class="section">
+<!-- STEP 5 LOCATION -->
+
+<div class="section hidden" id="locationSection">
 
 <h3>Delivery Location</h3>
 
@@ -164,9 +153,25 @@ margin-top:20px;
 </div>
 
 
+<!-- STEP 6 CONTACT -->
+
+<div class="section hidden" id="contactSection">
+
+<h3>Your Details</h3>
+
+<input type="text" id="clientName" placeholder="Enter your name" oninput="checkContact()">
+
+<input type="tel" id="clientPhone" placeholder="Enter phone number" oninput="checkContact()">
+
+</div>
+
+
+<!-- PRICE -->
+
 <div id="quoteResult"></div>
 
 </div>
+
 
 
 <script>
@@ -174,7 +179,8 @@ margin-top:20px;
 let selectedPlan="";
 let distance=0;
 
-/* PLAN SELECT */
+
+/* PLAN */
 
 function selectPlan(card,plan){
 
@@ -184,29 +190,82 @@ card.classList.add("active");
 
 selectedPlan=plan;
 
+document.getElementById("mealSection").classList.remove("hidden");
+
+}
+
+
+/* MEALS */
+
+function checkMeals(){
+
+let mealsSelected =
+document.getElementById("breakfast").checked ||
+document.getElementById("lunch").checked ||
+document.getElementById("dinner").checked ||
+document.getElementById("snack").checked ||
+document.getElementById("juice1").checked ||
+document.getElementById("juice2").checked;
+
+if(mealsSelected){
+
+document.getElementById("durationSection").classList.remove("hidden");
+
+}
+
 generateQuote();
 
 }
 
 
-/* LOAD PRICING */
+/* DURATION */
 
-let pricing=JSON.parse(localStorage.getItem("friskaPricing"));
-document.addEventListener("DOMContentLoaded", function(){
+function checkDuration(){
 
-document.querySelectorAll("input").forEach(el=>{
-el.addEventListener("change", generateQuote);
-});
+document.getElementById("slotSection").classList.remove("hidden");
 
-});
-if(!pricing){
-
-alert("Please configure pricing in admin.html");
+generateQuote();
 
 }
 
 
-/* AUTOCOMPLETE */
+/* SLOT */
+
+function checkSlot(){
+
+let slotSelected =
+document.getElementById("morning").checked ||
+document.getElementById("afternoon").checked ||
+document.getElementById("evening").checked;
+
+if(slotSelected){
+
+document.getElementById("locationSection").classList.remove("hidden");
+
+}
+
+generateQuote();
+
+}
+
+
+/* CONTACT */
+
+function checkContact(){
+
+let name=document.getElementById("clientName").value;
+let phone=document.getElementById("clientPhone").value;
+
+if(name && phone){
+
+generateQuote();
+
+}
+
+}
+
+
+/* GOOGLE LOCATION */
 
 let autocomplete;
 
@@ -227,8 +286,6 @@ calculateDistance(place.geometry.location);
 }
 
 
-/* DISTANCE */
-
 function calculateDistance(destination){
 
 const kitchen={lat:17.452623115758335,lng:78.41967516576499};
@@ -247,6 +304,8 @@ const element=response.rows[0].elements[0];
 
 distance=element.distance.value/1000;
 
+document.getElementById("contactSection").classList.remove("hidden");
+
 generateQuote();
 
 });
@@ -256,14 +315,20 @@ generateQuote();
 
 /* QUOTE */
 
+let pricing=JSON.parse(localStorage.getItem("friskaPricing"));
+
 function generateQuote(){
-if(distance == 0){
 
-document.getElementById("quoteResult").innerHTML =
-"<div style='text-align:center;color:#777;margin-top:10px'>Enter delivery location to see price</div>";
+let name=document.getElementById("clientName").value;
+let phone=document.getElementById("clientPhone").value;
 
+if(distance==0 || !name || !phone){
+
+document.getElementById("quoteResult").innerHTML="";
 return;
+
 }
+
 let breakfast=document.getElementById("breakfast").checked;
 let lunch=document.getElementById("lunch").checked;
 let dinner=document.getElementById("dinner").checked;
@@ -282,6 +347,7 @@ let dur=duration+"_";
 
 let foodPerDay=0;
 
+
 /* BREAKFAST */
 
 if(breakfast){
@@ -290,12 +356,12 @@ foodPerDay+=Number(pricing[prefix+dur+"breakfast"]);
 
 }
 
+
 /* LUNCH DINNER */
 
 let mealCount=0;
 
 if(lunch) mealCount++;
-
 if(dinner) mealCount++;
 
 if(mealCount==1){
@@ -310,6 +376,7 @@ foodPerDay+=Number(pricing[prefix+dur+"combo"])*2;
 
 }
 
+
 /* SNACK */
 
 if(snack){
@@ -317,6 +384,7 @@ if(snack){
 foodPerDay+=Number(pricing[prefix+dur+"snack"]);
 
 }
+
 
 /* JUICES */
 
@@ -332,49 +400,48 @@ foodPerDay+=Number(pricing[prefix+dur+"juice2"])*2;
 
 }
 
+
 /* DAYS */
 
 let days=1;
 
 if(duration=="w") days=6;
-
 if(duration=="m") days=26;
-
 if(duration=="q") days=78;
 
 let foodTotal=foodPerDay*days;
+
 
 /* DELIVERY */
 
 let trips=0;
 
 if(morning) trips++;
-
 if(afternoon) trips++;
-
 if(evening) trips++;
 
-let roundedDistance = Math.round(distance);
-let deliveryPerTrip = roundedDistance * Number(pricing.delivery);
+let roundedDistance=Math.round(distance);
+
+let deliveryPerTrip=roundedDistance*Number(pricing.delivery);
+
 let deliveryTotal=deliveryPerTrip*trips*days;
+
 
 /* GST */
 
 let gst=foodTotal*(pricing.gst/100);
 
-/* FINAL */
+
+/* TOTAL */
 
 let total=foodTotal+gst+deliveryTotal;
 
-document.getElementById("quoteResult").innerHTML =
 
-"<div style='text-align:center;margin-top:10px'>" +
+document.getElementById("quoteResult").innerHTML=
 
-"<div style='font-size:28px;font-weight:700;color:#0a1a6e'>₹" + total.toFixed(0) + "</div>" +
+"<div style='font-size:28px;font-weight:700;color:#0a1a6e'>₹"+total.toFixed(0)+"</div>"+
+"<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery charges & taxes</div>";
 
-"<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery charges & taxes</div>" +
-
-"</div>";
 }
 
 </script>
