@@ -160,6 +160,19 @@ id="clientPhone"
 placeholder="Enter phone number"
 maxlength="10">
 
+<button onclick="generateQuote()" style="
+margin-top:12px;
+width:100%;
+padding:12px;
+background:#0a1a6e;
+color:white;
+border:none;
+border-radius:6px;
+font-size:16px;
+cursor:pointer;
+">
+Submit
+</button>
 </div>
 
 <div id="quoteResult"></div>
@@ -275,16 +288,7 @@ let pricing=JSON.parse(localStorage.getItem("friskaPricing"));
 
 /* MOBILE SAFE QUOTE TRIGGER */
 
-document.addEventListener("input", function(){
 
-let name=document.getElementById("clientName").value.trim();
-let phone=document.getElementById("clientPhone").value.trim();
-
-if(phone.length===10 && name){
-generateQuote();
-}
-
-});
 
 /* QUOTE */
 
