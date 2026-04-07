@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Friska Meal Plan Quote</title>
+<title>Friska Meal Quote</title>
 
 <style>
 
@@ -43,10 +43,11 @@ margin-top:10px;
 
 .plan-card{
 flex:1;
-border:2px solid transparent;
 border-radius:10px;
 overflow:hidden;
 cursor:pointer;
+border:2px solid transparent;
+transition:0.2s;
 }
 
 .plan-card img{
@@ -58,6 +59,11 @@ display:block;
 border:2px solid #0a1a6e;
 }
 
+.plan-card:hover{
+transform:scale(1.03);
+box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+
 label{
 display:block;
 margin-top:8px;
@@ -66,32 +72,33 @@ margin-top:8px;
 input[type="text"]{
 width:100%;
 padding:10px;
-margin-top:6px;
-}
-
-.checkbox-group{
 margin-top:8px;
 }
 
 button{
-margin-top:25px;
+margin-top:30px;
 width:100%;
 padding:14px;
 background:#0a1a6e;
 color:white;
 border:none;
 font-size:16px;
-cursor:pointer;
 border-radius:8px;
+cursor:pointer;
 }
 
 .hidden{
 display:none;
 }
 
+.days{
+margin-top:10px;
+}
+
 </style>
 
 </head>
+
 
 <body>
 
@@ -99,7 +106,7 @@ display:none;
 
 <h2>Welcome to Friska Wellness</h2>
 
-<p>Select your meal plan to generate a quote.</p>
+<p>Select your plan to generate a quote.</p>
 
 
 <!-- PLAN SELECTION -->
@@ -110,12 +117,12 @@ display:none;
 
 <div class="plan-grid">
 
-<div class="plan-card" onclick="selectPlan(this,'nutri')">
-<img src="nutri-balance.jpeg">
+<div class="plan-card" onclick="selectPlan(this)">
+<img src="nutri_balance.jpeg">
 </div>
 
-<div class="plan-card" onclick="selectPlan(this,'protein')">
-<img src="high-protein.jpeg">
+<div class="plan-card" onclick="selectPlan(this)">
+<img src="high_protein.jpeg">
 </div>
 
 </div>
@@ -123,13 +130,11 @@ display:none;
 </div>
 
 
-<!-- MEAL OPTIONS -->
+<!-- MEALS -->
 
 <div class="section">
 
 <h3>Select Meals</h3>
-
-<div class="checkbox-group">
 
 <label><input type="checkbox"> Breakfast</label>
 <label><input type="checkbox"> Lunch</label>
@@ -137,8 +142,6 @@ display:none;
 <label><input type="checkbox"> Snack</label>
 <label><input type="checkbox"> 1x Juice</label>
 <label><input type="checkbox"> 2x Juices</label>
-
-</div>
 
 </div>
 
@@ -156,12 +159,12 @@ display:none;
 </div>
 
 
-<!-- MULTIPLE LOCATION -->
+<!-- MULTIPLE LOCATION OPTION -->
 
 <div class="section">
 
 <label>
-<input type="checkbox" id="multiLocationToggle" onchange="toggleMultiLocation()">
+<input type="checkbox" id="multiToggle" onchange="toggleLocations()">
 Multiple delivery locations
 </label>
 
@@ -172,11 +175,23 @@ Multiple delivery locations
 
 <div class="section">
 
-<h3>Location 1</h3>
+<h3>Delivery Location</h3>
 
-<input type="text" placeholder="Enter location">
+<input id="location1" type="text" placeholder="Enter delivery location">
 
-<label>Days</label>
+</div>
+
+
+<!-- MULTI LOCATION SECTION -->
+
+<div id="multiSection" class="hidden">
+
+
+<div class="section">
+
+<h3>Location 1 Days</h3>
+
+<div class="days">
 
 <label><input type="checkbox"> Mon</label>
 <label><input type="checkbox"> Tue</label>
@@ -187,16 +202,25 @@ Multiple delivery locations
 
 </div>
 
+</div>
 
-<!-- LOCATION 2 -->
 
-<div id="location2" class="section hidden">
+
+<div class="section">
 
 <h3>Location 2</h3>
 
-<input type="text" placeholder="Enter location">
+<input id="location2" type="text" placeholder="Enter second location">
 
-<label>Days</label>
+</div>
+
+
+
+<div class="section">
+
+<h3>Location 2 Days</h3>
+
+<div class="days">
 
 <label><input type="checkbox"> Mon</label>
 <label><input type="checkbox"> Tue</label>
@@ -204,6 +228,10 @@ Multiple delivery locations
 <label><input type="checkbox"> Thu</label>
 <label><input type="checkbox"> Fri</label>
 <label><input type="checkbox"> Sat</label>
+
+</div>
+
+</div>
 
 </div>
 
@@ -215,7 +243,7 @@ Multiple delivery locations
 
 <script>
 
-function selectPlan(card,plan){
+function selectPlan(card){
 
 document.querySelectorAll(".plan-card").forEach(c=>c.classList.remove("active"));
 
@@ -223,11 +251,13 @@ card.classList.add("active");
 
 }
 
-function toggleMultiLocation(){
 
-let section=document.getElementById("location2");
 
-if(document.getElementById("multiLocationToggle").checked){
+function toggleLocations(){
+
+let section=document.getElementById("multiSection");
+
+if(document.getElementById("multiToggle").checked){
 
 section.classList.remove("hidden");
 
@@ -239,7 +269,29 @@ section.classList.add("hidden");
 
 }
 
+
+
+let autocomplete1;
+let autocomplete2;
+
+function initAutocomplete(){
+
+const input1=document.getElementById("location1");
+autocomplete1=new google.maps.places.Autocomplete(input1);
+
+const input2=document.getElementById("location2");
+
+if(input2){
+autocomplete2=new google.maps.places.Autocomplete(input2);
+}
+
+}
+
 </script>
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7m4j7B6xMkC1EfS9aekBW-R6CdLatoVE&libraries=places&callback=initAutocomplete" async defer></script>
+
 
 </body>
 </html>
