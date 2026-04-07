@@ -261,7 +261,7 @@ let evening=document.getElementById("evening").checked;
 
 let duration=document.querySelector('input[name="duration"]:checked').value;
 
-let prefix=selectedPlan+"_";
+let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
 let dur=duration+"_";
 
 let foodPerDay=0;
@@ -284,7 +284,7 @@ if(dinner) mealCount++;
 
 if(mealCount==1){
 
-foodPerDay+=Number(pricing[prefix+dur+"meal"]);
+foodPerDay+=Number(pricing[prefix+dur+"lunch"]);
 
 }
 
@@ -338,7 +338,7 @@ if(afternoon) trips++;
 
 if(evening) trips++;
 
-let deliveryPerTrip=distance*pricing.delivery;
+let deliveryPerTrip=distance*Number(pricing.delivery);
 
 let deliveryTotal=deliveryPerTrip*trips*days;
 
