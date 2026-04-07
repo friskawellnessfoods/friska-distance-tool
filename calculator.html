@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Friska Meal Plan Quote</title>
+
+<style>
+
+body{
+font-family:system-ui;
+background:#f4f6fb;
+margin:0;
+padding:20px;
+display:flex;
+justify-content:center;
+}
+
+.container{
+max-width:500px;
+width:100%;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+h2{
+margin-top:0;
+}
+
+.section{
+margin-top:25px;
+}
+
+.plan-grid{
+display:flex;
+gap:15px;
+margin-top:10px;
+}
+
+.plan-card{
+flex:1;
+border:2px solid transparent;
+border-radius:10px;
+overflow:hidden;
+cursor:pointer;
+}
+
+.plan-card img{
+width:100%;
+display:block;
+}
+
+.plan-card.active{
+border:2px solid #0a1a6e;
+}
+
+label{
+display:block;
+margin-top:8px;
+}
+
+input[type="text"]{
+width:100%;
+padding:10px;
+margin-top:6px;
+}
+
+.checkbox-group{
+margin-top:8px;
+}
+
+button{
+margin-top:25px;
+width:100%;
+padding:14px;
+background:#0a1a6e;
+color:white;
+border:none;
+font-size:16px;
+cursor:pointer;
+border-radius:8px;
+}
+
+.hidden{
+display:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Welcome to Friska Wellness</h2>
+
+<p>Select your meal plan to generate a quote.</p>
+
+
+<!-- PLAN SELECTION -->
+
+<div class="section">
+
+<h3>Select Plan</h3>
+
+<div class="plan-grid">
+
+<div class="plan-card" onclick="selectPlan(this,'nutri')">
+<img src="nutri-balance.jpg">
+</div>
+
+<div class="plan-card" onclick="selectPlan(this,'protein')">
+<img src="high-protein.jpg">
+</div>
+
+</div>
+
+</div>
+
+
+<!-- MEAL OPTIONS -->
+
+<div class="section">
+
+<h3>Select Meals</h3>
+
+<div class="checkbox-group">
+
+<label><input type="checkbox"> Breakfast</label>
+<label><input type="checkbox"> Lunch</label>
+<label><input type="checkbox"> Dinner</label>
+<label><input type="checkbox"> Snack</label>
+<label><input type="checkbox"> 1x Juice</label>
+<label><input type="checkbox"> 2x Juices</label>
+
+</div>
+
+</div>
+
+
+<!-- DELIVERY SLOT -->
+
+<div class="section">
+
+<h3>Delivery Slot</h3>
+
+<label><input type="checkbox"> Morning</label>
+<label><input type="checkbox"> Afternoon</label>
+<label><input type="checkbox"> Evening</label>
+
+</div>
+
+
+<!-- MULTIPLE LOCATION -->
+
+<div class="section">
+
+<label>
+<input type="checkbox" id="multiLocationToggle" onchange="toggleMultiLocation()">
+Multiple delivery locations
+</label>
+
+</div>
+
+
+<!-- LOCATION 1 -->
+
+<div class="section">
+
+<h3>Location 1</h3>
+
+<input type="text" placeholder="Enter location">
+
+<label>Days</label>
+
+<label><input type="checkbox"> Mon</label>
+<label><input type="checkbox"> Tue</label>
+<label><input type="checkbox"> Wed</label>
+<label><input type="checkbox"> Thu</label>
+<label><input type="checkbox"> Fri</label>
+<label><input type="checkbox"> Sat</label>
+
+</div>
+
+
+<!-- LOCATION 2 -->
+
+<div id="location2" class="section hidden">
+
+<h3>Location 2</h3>
+
+<input type="text" placeholder="Enter location">
+
+<label>Days</label>
+
+<label><input type="checkbox"> Mon</label>
+<label><input type="checkbox"> Tue</label>
+<label><input type="checkbox"> Wed</label>
+<label><input type="checkbox"> Thu</label>
+<label><input type="checkbox"> Fri</label>
+<label><input type="checkbox"> Sat</label>
+
+</div>
+
+
+<button>Generate Quote</button>
+
+</div>
+
+
+<script>
+
+function selectPlan(card,plan){
+
+document.querySelectorAll(".plan-card").forEach(c=>c.classList.remove("active"));
+
+card.classList.add("active");
+
+}
+
+function toggleMultiLocation(){
+
+let section=document.getElementById("location2");
+
+if(document.getElementById("multiLocationToggle").checked){
+
+section.classList.remove("hidden");
+
+}else{
+
+section.classList.add("hidden");
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
