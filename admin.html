@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Friska Pricing Admin</title>
+
+<style>
+
+body{
+font-family:system-ui;
+background:#f4f6fb;
+margin:0;
+padding:40px;
+display:flex;
+justify-content:center;
+}
+
+.container{
+width:1000px;
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+h1{
+margin-top:0;
+}
+
+.plan{
+margin-top:40px;
+padding-top:20px;
+border-top:2px solid #eee;
+}
+
+.section{
+margin-top:25px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:10px;
+margin-top:10px;
+}
+
+.grid div{
+font-size:13px;
+}
+
+input{
+width:100%;
+padding:8px;
+}
+
+button{
+margin-top:30px;
+padding:14px;
+width:220px;
+background:#0a1a6e;
+color:white;
+border:none;
+font-size:16px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.success{
+margin-top:20px;
+color:green;
+font-weight:600;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Friska Pricing Admin Panel</h1>
+
+
+<h2>Nutri Balance Pricing</h2>
+
+<div class="section">
+
+<h3>26 Days</h3>
+
+<div class="grid">
+
+<div>Breakfast<input id="nb_m_breakfast"></div>
+<div>Lunch Single<input id="nb_m_lunch"></div>
+<div>Dinner Single<input id="nb_m_dinner"></div>
+<div>Lunch+Dinner Combo<input id="nb_m_combo"></div>
+<div>Snack<input id="nb_m_snack"></div>
+<div>1 Juice<input id="nb_m_juice1"></div>
+<div>2 Juices Each<input id="nb_m_juice2"></div>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h3>1 Week</h3>
+
+<div class="grid">
+
+<div>Breakfast<input id="nb_w_breakfast"></div>
+<div>Lunch Single<input id="nb_w_lunch"></div>
+<div>Dinner Single<input id="nb_w_dinner"></div>
+<div>Lunch+Dinner Combo<input id="nb_w_combo"></div>
+<div>Snack<input id="nb_w_snack"></div>
+<div>1 Juice<input id="nb_w_juice1"></div>
+<div>2 Juices Each<input id="nb_w_juice2"></div>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h3>1 Day</h3>
+
+<div class="grid">
+
+<div>Breakfast<input id="nb_d_breakfast"></div>
+<div>Lunch Single<input id="nb_d_lunch"></div>
+<div>Dinner Single<input id="nb_d_dinner"></div>
+<div>Lunch+Dinner Combo<input id="nb_d_combo"></div>
+<div>Snack<input id="nb_d_snack"></div>
+<div>1 Juice<input id="nb_d_juice1"></div>
+<div>2 Juices Each<input id="nb_d_juice2"></div>
+
+</div>
+
+</div>
+
+
+
+<h2>High Protein Pricing</h2>
+
+<div class="section">
+
+<h3>26 Days</h3>
+
+<div class="grid">
+
+<div>Breakfast<input id="hp_m_breakfast"></div>
+<div>Lunch Single<input id="hp_m_lunch"></div>
+<div>Dinner Single<input id="hp_m_dinner"></div>
+<div>Lunch+Dinner Combo<input id="hp_m_combo"></div>
+<div>Snack<input id="hp_m_snack"></div>
+<div>1 Juice<input id="hp_m_juice1"></div>
+<div>2 Juices Each<input id="hp_m_juice2"></div>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h3>1 Week</h3>
+
+<div class="grid">
+
+<div>Breakfast<input id="hp_w_breakfast"></div>
+<div>Lunch Single<input id="hp_w_lunch"></div>
+<div>Dinner Single<input id="hp_w_dinner"></div>
+<div>Lunch+Dinner Combo<input id="hp_w_combo"></div>
+<div>Snack<input id="hp_w_snack"></div>
+<div>1 Juice<input id="hp_w_juice1"></div>
+<div>2 Juices Each<input id="hp_w_juice2"></div>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h3>1 Day</h3>
+
+<div class="grid">
+
+<div>Breakfast<input id="hp_d_breakfast"></div>
+<div>Lunch Single<input id="hp_d_lunch"></div>
+<div>Dinner Single<input id="hp_d_dinner"></div>
+<div>Lunch+Dinner Combo<input id="hp_d_combo"></div>
+<div>Snack<input id="hp_d_snack"></div>
+<div>1 Juice<input id="hp_d_juice1"></div>
+<div>2 Juices Each<input id="hp_d_juice2"></div>
+
+</div>
+
+</div>
+
+
+<h2>Delivery & GST</h2>
+
+<div class="grid">
+
+<div>Delivery per KM<input id="delivery"></div>
+<div>GST %<input id="gst"></div>
+
+</div>
+
+
+<button onclick="savePricing()">Save Pricing</button>
+
+<div id="msg" class="success"></div>
+
+
+</div>
+
+
+<script>
+
+function savePricing(){
+
+let data={};
+
+document.querySelectorAll("input").forEach(i=>{
+data[i.id]=i.value;
+});
+
+localStorage.setItem("friskaPricing",JSON.stringify(data));
+
+document.getElementById("msg").innerHTML="Pricing Saved Successfully";
+
+}
+
+function loadPricing(){
+
+let data=localStorage.getItem("friskaPricing");
+
+if(!data) return;
+
+data=JSON.parse(data);
+
+document.querySelectorAll("input").forEach(i=>{
+if(data[i.id]) i.value=data[i.id];
+});
+
+}
+
+loadPricing();
+
+</script>
+
+</body>
+</html>
