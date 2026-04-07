@@ -162,8 +162,10 @@ text-align:center;
 
 <input type="text" id="clientName" placeholder="Enter your name" oninput="checkContact()">
 
-<input type="tel" id="clientPhone" placeholder="Enter phone number" oninput="checkContact()">
-
+<input type="tel" inputmode="numeric" pattern="[0-9]*"
+id="clientPhone"
+placeholder="Enter phone number"
+oninput="checkContact()" onkeyup="checkContact()" maxlength="10">
 </div>
 
 
@@ -253,7 +255,11 @@ generateQuote();
 
 function checkContact(){
 
+let phone=document.getElementById("clientPhone").value.trim();
+
+if(phone.length===10){
 generateQuote();
+}
 
 }
 
