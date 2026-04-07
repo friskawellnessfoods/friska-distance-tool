@@ -204,8 +204,11 @@ let phone=phoneField.value.trim();
 
 if(phone.length===10){
 
-phoneField.blur();     // close keyboard only
-generateQuote();       // run calculation
+phoneField.blur();
+
+setTimeout(function(){
+generateQuote();
+},200);
 
 }
 
