@@ -1,12 +1,11 @@
 let autocomplete;
 let selectedPlace = null;
-
-const kitchen = {
-  lat: 17.452623115758335,
-  lng: 78.41967516576499
-};
+let kitchen;
 
 function initAutocomplete(){
+
+  // kitchen defined AFTER google loads
+  kitchen = new google.maps.LatLng(17.452623115758335,78.41967516576499);
 
   const input = document.getElementById("address");
 
@@ -33,13 +32,12 @@ function calculateDistance(){
 
     origins:[kitchen],
     destinations:[destination],
-    travelMode: "DRIVING",
-    unitSystem: google.maps.UnitSystem.METRIC
+    travelMode:"DRIVING"
 
   }, function(response,status){
 
     if(status !== "OK"){
-      alert("Error calculating distance");
+      alert("Distance error");
       return;
     }
 
