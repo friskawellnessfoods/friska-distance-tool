@@ -127,9 +127,9 @@ text-align:center;
 <h3>Duration</h3>
 
 <label><input type="radio" name="duration" value="d"> 2 Day Trial</label>
-<label><input type="radio" name="duration" value="w"> 1 Week</label>
-<label><input type="radio" name="duration" value="m"> 26 Days</label>
-<label><input type="radio" name="duration" value="q"> 3 Months</label>
+<label><input type="radio" name="duration" value="w"> 1 Week(6 days)</label>
+<label><input type="radio" name="duration" value="m"> Monthly(26 Days)</label>
+<label><input type="radio" name="duration" value="q"> 3 Months(78 days)</label>
 
 </div>
 
@@ -319,10 +319,10 @@ return;
 
 let duration=durationElement.value;
 let durationText = {
-d: "2 Day Trial",
-w: "1 Week",
-m: "26 Days",
-q: "3 Months"
+d: "Two Day Trial",
+w: "Weekly(6 days)",
+m: "Monthly(26 Days)",
+q: "Three Months(78 days)"
 }[duration];
 let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
 let dur=duration+"_";
