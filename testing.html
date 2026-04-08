@@ -45,10 +45,6 @@ padding:20px 18px 140px;
 margin-top:25px;
 }
 
-.hidden{
-display:none;
-}
-
 .plan-card{
 border-radius:14px;
 overflow:hidden;
@@ -56,12 +52,10 @@ cursor:pointer;
 border:2px solid #eee;
 margin-top:14px;
 background:white;
-transition:.15s;
 }
 
 .plan-card.active{
 border:2px solid #0a1a6e;
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
 .plan-card img{
@@ -119,6 +113,10 @@ display:none;
 
 .bookBar button{
 background:#25D366;
+}
+
+.hidden{
+display:none;
 }
 
 </style>
@@ -185,25 +183,17 @@ background:#25D366;
 
 <div class="section">
 
-<h3>Delivery Location</h3>
+<h3>Location</h3>
 
-<input id="location1" placeholder="Enter primary location">
+<input id="location1" placeholder="Primary location">
 
 <label>
-<input type="checkbox" id="multiLocation" onchange="toggleLocations()"> Multiple delivery locations
+<input type="checkbox" id="multiLocation" onchange="toggleLocation2()"> Multiple delivery locations
 </label>
 
-<div id="location2Section" class="hidden">
+<div id="location2Block" class="hidden">
 
-<input id="location2" placeholder="Enter second location">
-
-<div id="daysSection">
-<label>Days per week at Location 1</label>
-<input id="loc1days" type="number" min="1" max="6">
-
-<label>Days per week at Location 2</label>
-<input id="loc2days" type="number" min="1" max="6">
-</div>
+<input id="location2" placeholder="Second location">
 
 </div>
 
@@ -226,8 +216,6 @@ background:#25D366;
 
 <div class="section">
 
-<h3>Your Details</h3>
-
 <input id="clientName" placeholder="Name">
 <input id="clientPhone" placeholder="Phone">
 
@@ -245,139 +233,187 @@ background:#25D366;
 
 <script>
 
-let selectedPlan="";
-let pricing={};
-let distance1=0;
-let distance2=0;
+let selectedPlan=""
+let pricing={}
+let distance1=0
+let distance2=0
 
-const WHATSAPP_NUMBER="918400964170";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwabaDpd5SRQFYDFl2gStNAQMiLtv1JZIZRRplU7blosoSHi87U6cuWQ7LdNhzNYdo/exec"
+const WHATSAPP_NUMBER="918400964170"
 
-fetch("https://script.google.com/macros/s/AKfycbwabaDpd5SRQFYDFl2gStNAQMiLtv1JZIZRRplU7blosoSHi87U6cuWQ7LdNhzNYdo/exec")
+fetch(SCRIPT_URL)
 .then(r=>r.json())
-.then(data=>pricing=data);
+.then(data=>pricing=data)
 
 function getPrice(k){return Number(pricing[k]||0)}
 
 function selectPlan(card,plan){
-document.querySelectorAll(".plan-card").forEach(c=>c.classList.remove("active"));
-card.classList.add("active");
-selectedPlan=plan;
+
+document.querySelectorAll(".plan-card").forEach(c=>c.classList.remove("active"))
+card.classList.add("active")
+selectedPlan=plan
+
 }
 
-function toggleLocations(){
-document.getElementById("location2Section").classList.toggle("hidden");
+function toggleLocation2(){
+
+document.getElementById("location2Block").classList.toggle("hidden")
+
 }
 
 function toggleSeafood(){
-document.getElementById("seafoodSection").classList.toggle("hidden");
+
+document.getElementById("seafoodSection").classList.toggle("hidden")
+
+}
+
+/* DISTANCE */
+
+function getDistance(origin,destination,callback){
+
+let service=new google.maps.DistanceMatrixService()
+
+service.getDistanceMatrix({
+
+origins:[origin],
+destinations:[destination],
+travelMode:"DRIVING"
+
+},function(response,status){
+
+if(status==="OK"){
+
+let km=response.rows[0].elements[0].distance.value/1000
+callback(km)
+
+}
+
+})
+
 }
 
 function generateQuote(){
 
-let duration=document.querySelector('input[name="duration"]:checked')?.value;
-if(!duration){alert("Select duration");return;}
+let name=document.getElementById("clientName").value
+let phone=document.getElementById("clientPhone").value
 
-let name=document.getElementById("clientName").value.trim();
-let phone=document.getElementById("clientPhone").value.trim();
+if(!name || phone.length<10){alert("Enter name and phone");return}
 
-if(!name||phone.length<10){alert("Enter name and phone");return;}
+let duration=document.querySelector('input[name="duration"]:checked')?.value
 
-let prefix=selectedPlan=="nb"?"nb_":"hp_";
-let dur=duration+"_";
+if(!duration){alert("Select duration");return}
 
-let foodPerDay=0;
+let days=duration=="d"?2:duration=="w"?6:duration=="m"?26:78
 
-if(document.getElementById("breakfast").checked)
-foodPerDay+=getPrice(prefix+dur+"breakfast");
+let prefix=selectedPlan=="nb"?"nb_":"hp_"
+let dur=duration+"_"
 
-let meals=0;
-if(document.getElementById("lunch").checked) meals++;
-if(document.getElementById("dinner").checked) meals++;
+/* FOOD */
 
-if(meals==1) foodPerDay+=getPrice(prefix+dur+"lunch");
-if(meals==2) foodPerDay+=getPrice(prefix+dur+"combo")*2;
+let foodPerDay=0
 
-if(document.getElementById("snack").checked)
-foodPerDay+=getPrice(prefix+dur+"snack");
+if(breakfast.checked) foodPerDay+=getPrice(prefix+dur+"breakfast")
 
-if(document.getElementById("juice1").checked)
-foodPerDay+=getPrice(prefix+dur+"juice1");
+let meals=0
+if(lunch.checked) meals++
+if(dinner.checked) meals++
 
-if(document.getElementById("juice2").checked)
-foodPerDay+=getPrice(prefix+dur+"juice2")*2;
+if(meals==1) foodPerDay+=getPrice(prefix+dur+"lunch")
+if(meals==2) foodPerDay+=getPrice(prefix+dur+"combo")*2
 
-let days=duration=="d"?2:duration=="w"?6:duration=="m"?26:78;
+if(snack.checked) foodPerDay+=getPrice(prefix+dur+"snack")
+if(juice1.checked) foodPerDay+=getPrice(prefix+dur+"juice1")
+if(juice2.checked) foodPerDay+=getPrice(prefix+dur+"juice2")*2
 
-let foodTotal=foodPerDay*days;
+let foodTotal=foodPerDay*days
 
-/* seafood */
+/* SEAFOOD */
 
-let seafoodCost=0;
+let seafoodCost=0
 
-if(document.getElementById("seafoodCheck").checked){
+if(seafoodCheck.checked){
 
-let seafoodDaysPerWeek=parseInt(document.getElementById("seafoodDays").value||0);
+let perWeek=parseInt(seafoodDays.value||0)
 
-let seafoodDays=Math.round((seafoodDaysPerWeek/6)*days);
+let seafoodDaysTotal=Math.round((perWeek/6)*days)
 
-seafoodCost=seafoodDays*getPrice("seafood");
+seafoodCost=seafoodDaysTotal*getPrice("seafood")
 
 }
 
-let foodSubtotal=foodTotal+seafoodCost;
+let foodSubtotal=foodTotal+seafoodCost
 
-/* delivery */
+/* DELIVERY */
 
-let deliveryRate=getPrice("delivery");
+let trips=0
+if(morning.checked) trips++
+if(afternoon.checked) trips++
+if(evening.checked) trips++
 
-let trips=0;
-if(morning.checked) trips++;
-if(afternoon.checked) trips++;
-if(evening.checked) trips++;
+let deliveryRate=getPrice("delivery")
 
-let deliveryTotal=distance1*deliveryRate*trips*days;
+let deliveryTotal=(distance1*deliveryRate*trips*days)
 
 /* GST */
 
-let gst=(foodSubtotal)*(getPrice("gst")/100);
+let gst=(foodSubtotal)*(getPrice("gst")/100)
 
-let total=foodSubtotal+deliveryTotal+gst;
+let total=foodSubtotal+deliveryTotal+gst
+
+/* SAVE LEAD */
+
+fetch(SCRIPT_URL,{
+method:"POST",
+body:JSON.stringify({
+
+name:name,
+phone:phone,
+plan:selectedPlan=="nb"?"Nutri Balance":"High Protein",
+duration:duration,
+location1:location1.value,
+location2:location2.value,
+price:total
+
+})
+})
 
 document.getElementById("quoteResult").innerHTML=
 
 "<div style='font-size:30px;font-weight:700;color:#0a1a6e'>₹"+total.toFixed(0)+"</div>"+
-"<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery & taxes</div>";
+"<div style='font-size:14px;color:#555'>Including delivery & taxes</div>"
 
-document.getElementById("bookBar").style.display="block";
+document.getElementById("bookBar").style.display="block"
 
 }
 
-/* WhatsApp */
+/* WHATSAPP */
 
 function bookNow(){
 
-let duration=document.querySelector('input[name="duration"]:checked').value;
+let duration=document.querySelector('input[name="duration"]:checked').value
 
 let durationText={
 d:"2 Day Trial",
 w:"1 Week",
 m:"26 Days",
 q:"3 Months"
-}[duration];
+}[duration]
 
-let planText=selectedPlan=="nb"?"Nutri Balance":"High Protein";
+let planText=selectedPlan=="nb"?"Nutri Balance":"High Protein"
 
-let clientName=document.getElementById("clientName").value;
+let name=document.getElementById("clientName").value
 
-let message="Hello Friska Wellness,%0A%0AMy name is "+clientName+
+let msg="Hello Friska Wellness,%0A%0AMy name is "+name+
 ".%0AI have opted for the "+planText+" plan for "+durationText+
-".%0APlease share menu and payment details.";
+".%0APlease share menu and payment details."
 
-window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+message);
+window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+msg)
 
 }
 
 </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7m4j7B6xMkC1EfS9aekBW-R6CdLatoVE&libraries=places"></script>
 
 </body>
 </html>
