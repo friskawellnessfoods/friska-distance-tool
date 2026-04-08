@@ -318,7 +318,12 @@ return;
 }
 
 let duration=durationElement.value;
-
+let durationText = {
+d: "2 Day Trial",
+w: "1 Week",
+m: "26 Days",
+q: "3 Months"
+}[duration];
 let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
 let dur=duration+"_";
 
@@ -411,7 +416,7 @@ name:name,
 phone:phone,
 plan:selectedPlan=="nb" ? "Nutri Balance":"High Protein",
 meals:meals.join(", "),
-duration:duration,
+duration:durationText,
 slots:slots.join(", "),
 location:document.getElementById("location").value,
 distance:roundedDistance,
