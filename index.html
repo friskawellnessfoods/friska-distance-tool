@@ -10,21 +10,28 @@
 <style>
 
 body{
-font-family:system-ui;
-background:#f4f6fb;
+font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+background:#f7f7f7;
 margin:0;
-padding:20px;
-display:flex;
-justify-content:center;
+padding:0;
+}
+
+.header{
+position:sticky;
+top:0;
+background:white;
+padding:16px;
+font-size:20px;
+font-weight:700;
+border-bottom:1px solid #eee;
+z-index:10;
 }
 
 .container{
-max-width:420px;
-width:100%;
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);
+max-width:480px;
+margin:auto;
+padding:20px 18px 140px;
+background:#f7f7f7;
 }
 
 .section{
@@ -36,11 +43,18 @@ display:none;
 }
 
 .plan-card{
-border-radius:10px;
+border-radius:14px;
 overflow:hidden;
 cursor:pointer;
-border:2px solid transparent;
-margin-top:12px;
+border:2px solid #eee;
+margin-top:14px;
+background:white;
+transition:all .15s ease;
+}
+
+.plan-card.active{
+border:2px solid #0a1a6e;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
 .plan-card img{
@@ -48,39 +62,73 @@ width:100%;
 display:block;
 }
 
-.plan-card.active{
-border:2px solid #0a1a6e;
-}
-
 label{
 display:block;
-margin-top:8px;
+background:white;
+padding:12px 14px;
+border-radius:10px;
+margin-top:10px;
+border:1px solid #eee;
+font-weight:500;
 }
 
-input[type="text"], input[type="tel"]{
+input[type="checkbox"],
+input[type="radio"]{
+margin-right:10px;
+}
+
+input[type="text"],
+input[type="tel"]{
 width:100%;
-padding:10px;
-margin-top:8px;
+padding:14px;
+margin-top:10px;
+border-radius:10px;
+border:1px solid #ddd;
+font-size:16px;
 }
 
 button{
 margin-top:12px;
 width:100%;
-padding:12px;
+padding:14px;
 background:#0a1a6e;
 color:white;
 border:none;
-border-radius:6px;
+border-radius:10px;
 font-size:16px;
 cursor:pointer;
 }
 
 #quoteResult{
-margin-top:20px;
-background:#f8f9ff;
-padding:20px;
-border-radius:10px;
+margin-top:22px;
+background:white;
+padding:22px;
+border-radius:14px;
 text-align:center;
+box-shadow:0 6px 16px rgba(0,0,0,0.06);
+}
+
+.bookBar{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:white;
+padding:14px 18px;
+border-top:1px solid #eee;
+box-shadow:0 -3px 10px rgba(0,0,0,0.08);
+display:none;
+}
+
+.bookBar button{
+width:100%;
+padding:16px;
+border-radius:10px;
+border:none;
+background:#25D366;
+color:white;
+font-size:17px;
+font-weight:600;
 }
 
 </style>
@@ -89,9 +137,11 @@ text-align:center;
 
 <body>
 
+<div class="header">Friska Wellness</div>
+
 <div class="container">
 
-<h2>Friska Wellness Quote</h2>
+<h2>Get Your Plan Quote</h2>
 
 <div class="section" id="planSection">
 
@@ -162,13 +212,17 @@ text-align:center;
 
 <input type="tel" id="clientPhone" placeholder="Enter phone number" maxlength="10">
 
-<button onclick="generateQuote()">Submit</button>
+<button onclick="generateQuote()">Generate Quote</button>
 
 </div>
 
 
 <div id="quoteResult"></div>
 
+</div>
+
+<div class="bookBar" id="bookBar">
+<button onclick="bookNow()">Book Now</button>
 </div>
 
 
@@ -178,15 +232,9 @@ let selectedPlan="";
 let distance=0;
 let pricing={};
 let pricingLoaded=false;
-let lastQuotePrice=0;
-
-
-/* ===== TOGGLES ===== */
 
 const SHOW_PROGRESSIVE_SECTIONS = true;
 const PHONE_REQUIRED = true;
-
-/* =================== */
 
 const WHATSAPP_NUMBER="918400964170";
 
@@ -200,15 +248,10 @@ pricingLoaded=true;
 
 
 function getPrice(key){
-
 if(!pricing[key]) return 0;
-
 return Number(pricing[key]);
-
 }
 
-
-/* PLAN */
 
 function selectPlan(card,plan){
 
@@ -240,8 +283,6 @@ document.getElementById("contactSection").classList.remove("hidden");
 
 }
 
-
-/* GOOGLE MAPS */
 
 let autocomplete;
 
@@ -287,34 +328,25 @@ document.getElementById("contactSection").classList.remove("hidden");
 }
 
 
-/* QUOTE */
-
 function generateQuote(){
 
 let name=document.getElementById("clientName").value.trim();
 let phone=document.getElementById("clientPhone").value.replace(/\D/g,'');
 
 if(distance==0){
-
 alert("Select location");
 return;
-
 }
 
 if(!name){
-
 alert("Enter name");
 return;
-
 }
 
 if(PHONE_REQUIRED && phone.length!==10){
-
 alert("Enter valid phone");
 return;
-
 }
-
 
 let breakfast=document.getElementById("breakfast").checked;
 let lunch=document.getElementById("lunch").checked;
@@ -330,10 +362,8 @@ let evening=document.getElementById("evening").checked;
 let durationElement=document.querySelector('input[name="duration"]:checked');
 
 if(!durationElement){
-
 alert("Select duration");
 return;
-
 }
 
 let duration=durationElement.value;
@@ -344,7 +374,6 @@ w:"1 Week",
 m:"26 Days",
 q:"3 Months"
 }[duration];
-
 
 let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
 let dur=duration+"_";
@@ -364,14 +393,12 @@ if(snack) foodPerDay+=getPrice(prefix+dur+"snack");
 if(juice1) foodPerDay+=getPrice(prefix+dur+"juice1");
 if(juice2) foodPerDay+=getPrice(prefix+dur+"juice2")*2;
 
-
 let days=2;
 if(duration=="w") days=6;
 if(duration=="m") days=26;
 if(duration=="q") days=78;
 
 let foodTotal=foodPerDay*days;
-
 
 let trips=0;
 if(morning) trips++;
@@ -384,25 +411,18 @@ let deliveryPerTrip=roundedDistance*getPrice("delivery");
 
 let deliveryTotal=deliveryPerTrip*trips*days;
 
-
 let gst=foodTotal*(getPrice("gst")/100);
 
 let total=foodTotal+gst+deliveryTotal;
 
-lastQuotePrice=total;
-
-
 document.getElementById("quoteResult").innerHTML=
 
-"<div style='font-size:28px;font-weight:700;color:#0a1a6e'>₹"+total.toFixed(0)+"</div>"+
-"<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery charges & taxes</div>"+
+"<div style='font-size:30px;font-weight:700;color:#0a1a6e'>₹"+total.toFixed(0)+"</div>"+
+"<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery charges & taxes</div>";
 
-"<div style='margin-top:18px'>"+
-"<button style='background:#25D366;color:white;font-weight:600' onclick='bookNow()'>Book Now</button>"+
-"</div>";
+document.getElementById("bookBar").style.display="block";
 
 }
-
 
 
 function bookNow(){
@@ -425,7 +445,7 @@ let clientName=document.getElementById("clientName").value.trim();
 let message=
 "Hello Friska Wellness,%0A%0A"+
 "My name is "+clientName+".%0A"+
-"I have opted for the *"+planText+"* plan for *"+durationText+"*.%0A%0A"+
+"I have opted for the "+planText+" plan for "+durationText+".%0A%0A"+
 "I would like to proceed with the subscription.%0A"+
 "Please share the weekly menu and payment details.%0A%0A"+
 "Thank you.";
