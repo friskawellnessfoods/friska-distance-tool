@@ -185,6 +185,7 @@ maxlength="10">
 let selectedPlan="";
 let distance=0;
 let pricing={};
+let pricingLoaded=false;
 let leadSent=false;
 
 /* LOAD PRICES FROM GOOGLE SHEET */
@@ -193,6 +194,7 @@ fetch("https://script.google.com/macros/s/AKfycbxYaOtiNmNOUz5nLer98L4lgIr4Cq67Bv
 .then(res=>res.json())
 .then(data=>{
 pricing=data;
+pricingLoaded=true;
 });
 
 /* PLAN */
@@ -259,6 +261,14 @@ document.getElementById("contactSection").classList.remove("hidden");
 /* QUOTE */
 
 function generateQuote(){
+
+if(!pricingLoaded){
+
+alert("Loading prices, please try again in a moment");
+
+return;
+
+}
 
 let name=document.getElementById("clientName").value.trim();
 let phone=document.getElementById("clientPhone").value.replace(/\D/g,'');
