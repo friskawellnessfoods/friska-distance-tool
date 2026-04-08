@@ -87,18 +87,6 @@ border:1px solid #ddd;
 font-size:16px;
 }
 
-button{
-margin-top:12px;
-width:100%;
-padding:14px;
-background:#0a1a6e;
-color:white;
-border:none;
-border-radius:10px;
-font-size:16px;
-cursor:pointer;
-}
-
 #quoteResult{
 margin-top:22px;
 background:white;
@@ -162,12 +150,12 @@ font-weight:600;
 
 <h3>Select Meals</h3>
 
-<label><input type="checkbox" id="breakfast"> Breakfast</label>
-<label><input type="checkbox" id="lunch"> Lunch</label>
-<label><input type="checkbox" id="dinner"> Dinner</label>
-<label><input type="checkbox" id="snack"> Snack</label>
-<label><input type="checkbox" id="juice1"> 1 Juice</label>
-<label><input type="checkbox" id="juice2"> 2 Juices</label>
+<label><input type="checkbox" id="breakfast" onchange="generateQuote()"> Breakfast</label>
+<label><input type="checkbox" id="lunch" onchange="generateQuote()"> Lunch</label>
+<label><input type="checkbox" id="dinner" onchange="generateQuote()"> Dinner</label>
+<label><input type="checkbox" id="snack" onchange="generateQuote()"> Snack</label>
+<label><input type="checkbox" id="juice1" onchange="generateQuote()"> 1 Juice</label>
+<label><input type="checkbox" id="juice2" onchange="generateQuote()"> 2 Juices</label>
 
 </div>
 
@@ -176,10 +164,10 @@ font-weight:600;
 
 <h3>Duration</h3>
 
-<label><input type="radio" name="duration" value="d"> 2 Day Trial</label>
-<label><input type="radio" name="duration" value="w"> 1 Week</label>
-<label><input type="radio" name="duration" value="m"> 26 Days</label>
-<label><input type="radio" name="duration" value="q"> 3 Months</label>
+<label><input type="radio" name="duration" value="d" onchange="generateQuote()"> 2 Day Trial</label>
+<label><input type="radio" name="duration" value="w" onchange="generateQuote()"> 1 Week</label>
+<label><input type="radio" name="duration" value="m" onchange="generateQuote()"> 26 Days</label>
+<label><input type="radio" name="duration" value="q" onchange="generateQuote()"> 3 Months</label>
 
 </div>
 
@@ -188,9 +176,9 @@ font-weight:600;
 
 <h3>Delivery Slot</h3>
 
-<label><input type="checkbox" id="morning"> Morning</label>
-<label><input type="checkbox" id="afternoon"> Afternoon</label>
-<label><input type="checkbox" id="evening"> Evening</label>
+<label><input type="checkbox" id="morning" onchange="generateQuote()"> Morning</label>
+<label><input type="checkbox" id="afternoon" onchange="generateQuote()"> Afternoon</label>
+<label><input type="checkbox" id="evening" onchange="generateQuote()"> Evening</label>
 
 </div>
 
@@ -208,11 +196,9 @@ font-weight:600;
 
 <h3>Your Details</h3>
 
-<input type="text" id="clientName" placeholder="Enter your name">
+<input type="text" id="clientName" placeholder="Enter your name" oninput="generateQuote()">
 
-<input type="tel" id="clientPhone" placeholder="Enter phone number" maxlength="10">
-
-<button onclick="generateQuote()">Generate Quote</button>
+<input type="tel" id="clientPhone" placeholder="Enter phone number" maxlength="10" oninput="generateQuote()">
 
 </div>
 
@@ -270,16 +256,7 @@ document.getElementById("locationSection").classList.remove("hidden");
 
 }
 
-}
-
-
-if(!SHOW_PROGRESSIVE_SECTIONS){
-
-document.getElementById("mealSection").classList.remove("hidden");
-document.getElementById("durationSection").classList.remove("hidden");
-document.getElementById("slotSection").classList.remove("hidden");
-document.getElementById("locationSection").classList.remove("hidden");
-document.getElementById("contactSection").classList.remove("hidden");
+generateQuote();
 
 }
 
@@ -323,6 +300,8 @@ distance=element.distance.value/1000;
 
 document.getElementById("contactSection").classList.remove("hidden");
 
+generateQuote();
+
 });
 
 }
@@ -330,23 +309,19 @@ document.getElementById("contactSection").classList.remove("hidden");
 
 function generateQuote(){
 
+if(!selectedPlan) return;
+
 let name=document.getElementById("clientName").value.trim();
 let phone=document.getElementById("clientPhone").value.replace(/\D/g,'');
 
-if(distance==0){
-alert("Select location");
-return;
-}
+let durationElement=document.querySelector('input[name="duration"]:checked');
 
-if(!name){
-alert("Enter name");
-return;
-}
+if(!durationElement) return;
 
-if(PHONE_REQUIRED && phone.length!==10){
-alert("Enter valid phone");
-return;
-}
+let duration=durationElement.value;
+
+let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
+let dur=duration+"_";
 
 let breakfast=document.getElementById("breakfast").checked;
 let lunch=document.getElementById("lunch").checked;
@@ -358,25 +333,6 @@ let juice2=document.getElementById("juice2").checked;
 let morning=document.getElementById("morning").checked;
 let afternoon=document.getElementById("afternoon").checked;
 let evening=document.getElementById("evening").checked;
-
-let durationElement=document.querySelector('input[name="duration"]:checked');
-
-if(!durationElement){
-alert("Select duration");
-return;
-}
-
-let duration=durationElement.value;
-
-let durationText={
-d:"2 Day Trial",
-w:"1 Week",
-m:"26 Days",
-q:"3 Months"
-}[duration];
-
-let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
-let dur=duration+"_";
 
 let foodPerDay=0;
 
