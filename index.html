@@ -178,7 +178,6 @@ let selectedPlan="";
 let distance=0;
 let pricing={};
 let pricingLoaded=false;
-let leadSent=false;
 
 
 /* LOAD PRICING FROM SHEET */
@@ -389,10 +388,6 @@ document.getElementById("quoteResult").innerHTML=
 
 /* SAVE LEAD */
 
-if(!leadSent){
-
-leadSent=true;
-
 let meals=[];
 if(breakfast) meals.push("Breakfast");
 if(lunch) meals.push("Lunch");
@@ -425,11 +420,6 @@ price:total
 })
 
 });
-
-}
-
-}
-
 </script>
 
 
