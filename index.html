@@ -127,9 +127,9 @@ text-align:center;
 <h3>Duration</h3>
 
 <label><input type="radio" name="duration" value="d"> 2 Day Trial</label>
-<label><input type="radio" name="duration" value="w"> 1 Week(6 days)</label>
-<label><input type="radio" name="duration" value="m"> Monthly(26 Days)</label>
-<label><input type="radio" name="duration" value="q"> 3 Months(78 days)</label>
+<label><input type="radio" name="duration" value="w"> 1 Week</label>
+<label><input type="radio" name="duration" value="m"> 26 Days</label>
+<label><input type="radio" name="duration" value="q"> 3 Months</label>
 
 </div>
 
@@ -178,9 +178,18 @@ let selectedPlan="";
 let distance=0;
 let pricing={};
 let pricingLoaded=false;
+let lastQuotePrice=0;
 
 
-/* LOAD PRICING FROM SHEET */
+/* ===== TOGGLES ===== */
+
+const SHOW_PROGRESSIVE_SECTIONS = true;
+const PHONE_REQUIRED = true;
+
+/* =================== */
+
+const WHATSAPP_NUMBER="918400964170";
+
 
 fetch("https://script.google.com/macros/s/AKfycbwabaDpd5SRQFYDFl2gStNAQMiLtv1JZIZRRplU7blosoSHi87U6cuWQ7LdNhzNYdo/exec")
 .then(res=>res.json())
@@ -209,10 +218,25 @@ card.classList.add("active");
 
 selectedPlan=plan;
 
+if(SHOW_PROGRESSIVE_SECTIONS){
+
 document.getElementById("mealSection").classList.remove("hidden");
 document.getElementById("durationSection").classList.remove("hidden");
 document.getElementById("slotSection").classList.remove("hidden");
 document.getElementById("locationSection").classList.remove("hidden");
+
+}
+
+}
+
+
+if(!SHOW_PROGRESSIVE_SECTIONS){
+
+document.getElementById("mealSection").classList.remove("hidden");
+document.getElementById("durationSection").classList.remove("hidden");
+document.getElementById("slotSection").classList.remove("hidden");
+document.getElementById("locationSection").classList.remove("hidden");
+document.getElementById("contactSection").classList.remove("hidden");
 
 }
 
@@ -266,7 +290,6 @@ document.getElementById("contactSection").classList.remove("hidden");
 /* QUOTE */
 
 function generateQuote(){
-console.log("Selected Plan:", selectedPlan);
 
 let name=document.getElementById("clientName").value.trim();
 let phone=document.getElementById("clientPhone").value.replace(/\D/g,'');
@@ -274,7 +297,6 @@ let phone=document.getElementById("clientPhone").value.replace(/\D/g,'');
 if(distance==0){
 
 alert("Select location");
-
 return;
 
 }
@@ -282,15 +304,13 @@ return;
 if(!name){
 
 alert("Enter name");
-
 return;
 
 }
 
-if(phone.length!==10){
+if(PHONE_REQUIRED && phone.length!==10){
 
 alert("Enter valid phone");
-
 return;
 
 }
@@ -312,58 +332,48 @@ let durationElement=document.querySelector('input[name="duration"]:checked');
 if(!durationElement){
 
 alert("Select duration");
-
 return;
 
 }
 
 let duration=durationElement.value;
-let durationText = {
-d: "Two Day Trial",
-w: "Weekly(6 days)",
-m: "Monthly(26 Days)",
-q: "Three Months(78 days)"
+
+let durationText={
+d:"2 Day Trial",
+w:"1 Week",
+m:"26 Days",
+q:"3 Months"
 }[duration];
+
+
 let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
 let dur=duration+"_";
 
 let foodPerDay=0;
 
-
 if(breakfast) foodPerDay+=getPrice(prefix+dur+"breakfast");
 
 let mealCount=0;
-
 if(lunch) mealCount++;
 if(dinner) mealCount++;
 
 if(mealCount==1) foodPerDay+=getPrice(prefix+dur+"lunch");
-
 if(mealCount==2) foodPerDay+=getPrice(prefix+dur+"combo")*2;
 
 if(snack) foodPerDay+=getPrice(prefix+dur+"snack");
-
 if(juice1) foodPerDay+=getPrice(prefix+dur+"juice1");
-
 if(juice2) foodPerDay+=getPrice(prefix+dur+"juice2")*2;
 
 
-/* DAYS */
-
 let days=2;
-
 if(duration=="w") days=6;
 if(duration=="m") days=26;
 if(duration=="q") days=78;
 
-
 let foodTotal=foodPerDay*days;
 
 
-/* DELIVERY */
-
 let trips=0;
-
 if(morning) trips++;
 if(afternoon) trips++;
 if(evening) trips++;
@@ -375,58 +385,57 @@ let deliveryPerTrip=roundedDistance*getPrice("delivery");
 let deliveryTotal=deliveryPerTrip*trips*days;
 
 
-/* GST */
-
 let gst=foodTotal*(getPrice("gst")/100);
 
 let total=foodTotal+gst+deliveryTotal;
 
+lastQuotePrice=total;
 
-/* SHOW PRICE */
 
 document.getElementById("quoteResult").innerHTML=
 
 "<div style='font-size:28px;font-weight:700;color:#0a1a6e'>₹"+total.toFixed(0)+"</div>"+
-"<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery charges & taxes</div>";
+"<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery charges & taxes</div>"+
 
-
-
-/* SAVE LEAD */
-
-let meals=[];
-if(breakfast) meals.push("Breakfast");
-if(lunch) meals.push("Lunch");
-if(dinner) meals.push("Dinner");
-if(snack) meals.push("Snack");
-if(juice1) meals.push("1 Juice");
-if(juice2) meals.push("2 Juices");
-
-let slots=[];
-if(morning) slots.push("Morning");
-if(afternoon) slots.push("Afternoon");
-if(evening) slots.push("Evening");
-
-fetch("https://script.google.com/macros/s/AKfycbx19L4KMs7I-Eg8RxSeeppGMpePjt3DIuXxFxtAOei0PQ_pihmbGxGZJQv9fR45qQY/exec",{
-
-method:"POST",
-
-body:JSON.stringify({
-
-name:name,
-phone:phone,
-plan:selectedPlan=="nb" ? "Nutri Balance":"High Protein",
-meals:meals.join(", "),
-duration:durationText,
-slots:slots.join(", "),
-location:document.getElementById("location").value,
-distance:roundedDistance,
-price:total
-
-})
-
-});
+"<div style='margin-top:18px'>"+
+"<button style='background:#25D366;color:white;font-weight:600' onclick='bookNow()'>Book Now</button>"+
+"</div>";
 
 }
+
+
+
+function bookNow(){
+
+let durationElement=document.querySelector('input[name="duration"]:checked');
+
+let duration=durationElement.value;
+
+let durationText={
+d:"2 Day Trial",
+w:"1 Week",
+m:"26 Days",
+q:"3 Months"
+}[duration];
+
+let planText=selectedPlan=="nb" ? "Nutri Balance" : "High Protein";
+
+let clientName=document.getElementById("clientName").value.trim();
+
+let message=
+"Hello Friska Wellness,%0A%0A"+
+"My name is "+clientName+".%0A"+
+"I have opted for the *"+planText+"* plan for *"+durationText+"*.%0A%0A"+
+"I would like to proceed with the subscription.%0A"+
+"Please share the weekly menu and payment details.%0A%0A"+
+"Thank you.";
+
+let url="https://wa.me/"+WHATSAPP_NUMBER+"?text="+message;
+
+window.open(url,"_blank");
+
+}
+
 </script>
 
 
