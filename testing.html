@@ -33,16 +33,22 @@ z-index:10;
 height:48px;
 max-width:200px;
 object-fit:contain;
+display:block;
 }
 
 .container{
 max-width:480px;
 margin:auto;
 padding:20px 18px 140px;
+background:#f7f7f7;
 }
 
 .section{
 margin-top:25px;
+}
+
+.hidden{
+display:none;
 }
 
 .plan-card{
@@ -52,31 +58,43 @@ cursor:pointer;
 border:2px solid #eee;
 margin-top:14px;
 background:white;
+transition:all .15s ease;
 }
 
 .plan-card.active{
 border:2px solid #0a1a6e;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
 .plan-card img{
 width:100%;
+display:block;
 }
 
 label{
 display:block;
 background:white;
-padding:12px;
+padding:12px 14px;
 border-radius:10px;
 margin-top:10px;
 border:1px solid #eee;
+font-weight:500;
 }
 
-input{
+input[type="checkbox"],
+input[type="radio"]{
+margin-right:10px;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="number"]{
 width:100%;
-padding:12px;
+padding:14px;
 margin-top:10px;
-border-radius:8px;
+border-radius:10px;
 border:1px solid #ddd;
+font-size:16px;
 }
 
 button{
@@ -88,6 +106,7 @@ color:white;
 border:none;
 border-radius:10px;
 font-size:16px;
+cursor:pointer;
 }
 
 #quoteResult{
@@ -105,18 +124,21 @@ bottom:0;
 left:0;
 right:0;
 background:white;
-padding:14px;
+padding:14px 18px;
 border-top:1px solid #eee;
 box-shadow:0 -3px 10px rgba(0,0,0,0.08);
 display:none;
 }
 
 .bookBar button{
+width:100%;
+padding:16px;
+border-radius:10px;
+border:none;
 background:#25D366;
-}
-
-.hidden{
-display:none;
+color:white;
+font-size:17px;
+font-weight:600;
 }
 
 </style>
@@ -133,7 +155,7 @@ display:none;
 
 <h2>Get Your Plan Quote</h2>
 
-<div class="section">
+<div class="section" id="planSection">
 
 <h3>Select Plan</h3>
 
@@ -147,7 +169,8 @@ display:none;
 
 </div>
 
-<div class="section">
+
+<div class="section hidden" id="mealSection">
 
 <h3>Select Meals</h3>
 
@@ -160,7 +183,8 @@ display:none;
 
 </div>
 
-<div class="section">
+
+<div class="section hidden" id="durationSection">
 
 <h3>Duration</h3>
 
@@ -171,7 +195,8 @@ display:none;
 
 </div>
 
-<div class="section">
+
+<div class="section hidden" id="slotSection">
 
 <h3>Delivery Slot</h3>
 
@@ -181,47 +206,60 @@ display:none;
 
 </div>
 
-<div class="section">
 
-<h3>Location</h3>
+<div class="section hidden" id="locationSection">
 
-<input id="location1" placeholder="Primary location">
+<h3>Delivery Location</h3>
+
+<input id="location" type="text" placeholder="Enter delivery location">
 
 <label>
-<input type="checkbox" id="multiLocation" onchange="toggleLocation2()"> Multiple delivery locations
+<input type="checkbox" id="multiLocationToggle" onchange="toggleMultiLocation()"> Multiple delivery locations
 </label>
 
-<div id="location2Block" class="hidden">
+<div id="multiLocationBlock" class="hidden">
 
-<input id="location2" placeholder="Second location">
+<input id="location2" type="text" placeholder="Second delivery location">
+
+<label>Days per week at Location 1</label>
+<input type="number" id="loc1days" min="1" max="6">
+
+<label>Days per week at Location 2</label>
+<input type="number" id="loc2days" min="1" max="6">
 
 </div>
 
 </div>
 
-<div class="section">
+
+<div class="section hidden" id="seafoodSection">
 
 <label>
-<input type="checkbox" id="seafoodCheck" onchange="toggleSeafood()"> Add Seafood
+<input type="checkbox" id="seafoodToggle" onchange="toggleSeafood()"> Add Seafood
 </label>
 
-<div id="seafoodSection" class="hidden">
+<div id="seafoodDaysBlock" class="hidden">
 
 <label>Seafood days per week</label>
-<input id="seafoodDays" type="number" min="1" max="6">
+<input type="number" id="seafoodDays" min="1" max="6">
 
 </div>
 
 </div>
 
-<div class="section">
 
-<input id="clientName" placeholder="Name">
-<input id="clientPhone" placeholder="Phone">
+<div class="section hidden" id="contactSection">
+
+<h3>Your Details</h3>
+
+<input type="text" id="clientName" placeholder="Enter your name">
+
+<input type="tel" id="clientPhone" placeholder="Enter phone number" maxlength="10">
 
 <button onclick="generateQuote()">Submit</button>
 
 </div>
+
 
 <div id="quoteResult"></div>
 
@@ -231,189 +269,269 @@ display:none;
 <button onclick="bookNow()">Book Now</button>
 </div>
 
+
 <script>
 
-let selectedPlan=""
-let pricing={}
-let distance1=0
-let distance2=0
+let selectedPlan="";
+let distance=0;
+let pricing={};
+let pricingLoaded=false;
 
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwabaDpd5SRQFYDFl2gStNAQMiLtv1JZIZRRplU7blosoSHi87U6cuWQ7LdNhzNYdo/exec"
-const WHATSAPP_NUMBER="918400964170"
+const SHOW_PROGRESSIVE_SECTIONS = true;
+const PHONE_REQUIRED = true;
 
-fetch(SCRIPT_URL)
-.then(r=>r.json())
-.then(data=>pricing=data)
+const WHATSAPP_NUMBER="918400964170";
 
-function getPrice(k){return Number(pricing[k]||0)}
+
+fetch("https://script.google.com/macros/s/AKfycbwabaDpd5SRQFYDFl2gStNAQMiLtv1JZIZRRplU7blosoSHi87U6cuWQ7LdNhzNYdo/exec")
+.then(res=>res.json())
+.then(data=>{
+pricing=data;
+pricingLoaded=true;
+});
+
+
+function getPrice(key){
+if(!pricing[key]) return 0;
+return Number(pricing[key]);
+}
+
 
 function selectPlan(card,plan){
 
-document.querySelectorAll(".plan-card").forEach(c=>c.classList.remove("active"))
-card.classList.add("active")
-selectedPlan=plan
+document.querySelectorAll(".plan-card").forEach(c=>c.classList.remove("active"));
+
+card.classList.add("active");
+
+selectedPlan=plan;
+
+if(SHOW_PROGRESSIVE_SECTIONS){
+
+document.getElementById("mealSection").classList.remove("hidden");
+document.getElementById("durationSection").classList.remove("hidden");
+document.getElementById("slotSection").classList.remove("hidden");
+document.getElementById("locationSection").classList.remove("hidden");
+document.getElementById("seafoodSection").classList.remove("hidden");
 
 }
 
-function toggleLocation2(){
+}
 
-document.getElementById("location2Block").classList.toggle("hidden")
 
+function toggleMultiLocation(){
+document.getElementById("multiLocationBlock").classList.toggle("hidden");
 }
 
 function toggleSeafood(){
+document.getElementById("seafoodDaysBlock").classList.toggle("hidden");
+}
 
-document.getElementById("seafoodSection").classList.toggle("hidden")
+
+let autocomplete;
+
+function initAutocomplete(){
+
+const input=document.getElementById("location");
+
+autocomplete=new google.maps.places.Autocomplete(input);
+
+autocomplete.addListener("place_changed",function(){
+
+const place=autocomplete.getPlace();
+
+calculateDistance(place.geometry.location);
+
+});
 
 }
 
-/* DISTANCE */
 
-function getDistance(origin,destination,callback){
+function calculateDistance(destination){
 
-let service=new google.maps.DistanceMatrixService()
+const kitchen={lat:17.452623115758335,lng:78.41967516576499};
+
+const service=new google.maps.DistanceMatrixService();
 
 service.getDistanceMatrix({
 
-origins:[origin],
+origins:[kitchen],
 destinations:[destination],
 travelMode:"DRIVING"
 
 },function(response,status){
 
-if(status==="OK"){
+const element=response.rows[0].elements[0];
 
-let km=response.rows[0].elements[0].distance.value/1000
-callback(km)
+distance = element.distance.value / 1000;
+
+document.getElementById("contactSection").classList.remove("hidden");
+
+});
 
 }
 
-})
-
-}
 
 function generateQuote(){
 
-let name=document.getElementById("clientName").value
-let phone=document.getElementById("clientPhone").value
+let name=document.getElementById("clientName").value.trim();
+let phone=document.getElementById("clientPhone").value.replace(/\D/g,'');
 
-if(!name || phone.length<10){alert("Enter name and phone");return}
+if(distance<=0){
+alert("Please enter delivery location");
+return;
+}
 
-let duration=document.querySelector('input[name="duration"]:checked')?.value
+if(!name){
+alert("Enter name");
+return;
+}
 
-if(!duration){alert("Select duration");return}
+if(PHONE_REQUIRED && phone.length!==10){
+alert("Enter valid phone number");
+return;
+}
 
-let days=duration=="d"?2:duration=="w"?6:duration=="m"?26:78
+let durationElement=document.querySelector('input[name="duration"]:checked');
 
-let prefix=selectedPlan=="nb"?"nb_":"hp_"
-let dur=duration+"_"
+if(!durationElement){
+alert("Select duration");
+return;
+}
 
-/* FOOD */
+let duration=durationElement.value;
+let durationText={
+d:"2 Day Trial",
+w:"1 Week",
+m:"26 Days",
+q:"3 Months"
+}[duration];
 
-let foodPerDay=0
+let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
+let dur=duration+"_";
 
-if(breakfast.checked) foodPerDay+=getPrice(prefix+dur+"breakfast")
+let breakfast=document.getElementById("breakfast").checked;
+let lunch=document.getElementById("lunch").checked;
+let dinner=document.getElementById("dinner").checked;
+let snack=document.getElementById("snack").checked;
+let juice1=document.getElementById("juice1").checked;
+let juice2=document.getElementById("juice2").checked;
 
-let meals=0
-if(lunch.checked) meals++
-if(dinner.checked) meals++
+let morning=document.getElementById("morning").checked;
+let afternoon=document.getElementById("afternoon").checked;
+let evening=document.getElementById("evening").checked;
 
-if(meals==1) foodPerDay+=getPrice(prefix+dur+"lunch")
-if(meals==2) foodPerDay+=getPrice(prefix+dur+"combo")*2
+let foodPerDay=0;
 
-if(snack.checked) foodPerDay+=getPrice(prefix+dur+"snack")
-if(juice1.checked) foodPerDay+=getPrice(prefix+dur+"juice1")
-if(juice2.checked) foodPerDay+=getPrice(prefix+dur+"juice2")*2
+if(breakfast) foodPerDay+=getPrice(prefix+dur+"breakfast");
 
-let foodTotal=foodPerDay*days
+let mealCount=0;
+if(lunch) mealCount++;
+if(dinner) mealCount++;
+
+if(mealCount==1) foodPerDay+=getPrice(prefix+dur+"lunch");
+if(mealCount==2) foodPerDay+=getPrice(prefix+dur+"combo")*2;
+
+if(snack) foodPerDay+=getPrice(prefix+dur+"snack");
+if(juice1) foodPerDay+=getPrice(prefix+dur+"juice1");
+if(juice2) foodPerDay+=getPrice(prefix+dur+"juice2")*2;
+
+let days=2;
+if(duration=="w") days=6;
+if(duration=="m") days=26;
+if(duration=="q") days=78;
+
+let foodTotal=foodPerDay*days;
 
 /* SEAFOOD */
 
-let seafoodCost=0
+if(document.getElementById("seafoodToggle").checked){
 
-if(seafoodCheck.checked){
+let seafoodDaysPerWeek=parseInt(document.getElementById("seafoodDays").value||0);
 
-let perWeek=parseInt(seafoodDays.value||0)
+let seafoodDays=Math.round((seafoodDaysPerWeek/6)*days);
 
-let seafoodDaysTotal=Math.round((perWeek/6)*days)
-
-seafoodCost=seafoodDaysTotal*getPrice("seafood")
+foodTotal += seafoodDays*getPrice("seafood");
 
 }
 
-let foodSubtotal=foodTotal+seafoodCost
+let trips=0;
+if(morning) trips++;
+if(afternoon) trips++;
+if(evening) trips++;
 
-/* DELIVERY */
+let roundedDistance=Math.round(distance);
 
-let trips=0
-if(morning.checked) trips++
-if(afternoon.checked) trips++
-if(evening.checked) trips++
+let deliveryPerTrip=roundedDistance*getPrice("delivery");
 
-let deliveryRate=getPrice("delivery")
+let deliveryTotal=deliveryPerTrip*trips*days;
 
-let deliveryTotal=(distance1*deliveryRate*trips*days)
+let gst=foodTotal*(getPrice("gst")/100);
 
-/* GST */
+let total=foodTotal+gst+deliveryTotal;
 
-let gst=(foodSubtotal)*(getPrice("gst")/100)
+fetch("https://script.google.com/macros/s/AKfycbwabaDpd5SRQFYDFl2gStNAQMiLtv1JZIZRRplU7blosoSHi87U6cuWQ7LdNhzNYdo/exec",{
 
-let total=foodSubtotal+deliveryTotal+gst
-
-/* SAVE LEAD */
-
-fetch(SCRIPT_URL,{
 method:"POST",
+
 body:JSON.stringify({
 
 name:name,
 phone:phone,
-plan:selectedPlan=="nb"?"Nutri Balance":"High Protein",
-duration:duration,
-location1:location1.value,
-location2:location2.value,
+plan:selectedPlan=="nb" ? "Nutri Balance":"High Protein",
+duration:durationText,
+location:document.getElementById("location").value,
+location2:document.getElementById("location2").value,
 price:total
 
 })
-})
+
+});
 
 document.getElementById("quoteResult").innerHTML=
 
 "<div style='font-size:30px;font-weight:700;color:#0a1a6e'>₹"+total.toFixed(0)+"</div>"+
-"<div style='font-size:14px;color:#555'>Including delivery & taxes</div>"
+"<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery charges & taxes</div>";
 
-document.getElementById("bookBar").style.display="block"
+document.getElementById("bookBar").style.display="block";
 
 }
 
-/* WHATSAPP */
 
 function bookNow(){
 
-let duration=document.querySelector('input[name="duration"]:checked').value
+let durationElement=document.querySelector('input[name="duration"]:checked');
+
+let duration=durationElement.value;
 
 let durationText={
 d:"2 Day Trial",
 w:"1 Week",
 m:"26 Days",
 q:"3 Months"
-}[duration]
+}[duration];
 
-let planText=selectedPlan=="nb"?"Nutri Balance":"High Protein"
+let planText=selectedPlan=="nb" ? "Nutri Balance" : "High Protein";
 
-let name=document.getElementById("clientName").value
+let clientName=document.getElementById("clientName").value.trim();
 
-let msg="Hello Friska Wellness,%0A%0AMy name is "+name+
-".%0AI have opted for the "+planText+" plan for "+durationText+
-".%0APlease share menu and payment details."
+let message=
+"Hello Friska Wellness,%0A%0A"+
+"My name is "+clientName+".%0A"+
+"I have opted for the "+planText+" plan for "+durationText+".%0A%0A"+
+"I would like to proceed with the subscription.%0A"+
+"Please share the weekly menu and payment details.%0A%0A"+
+"Thank you.";
 
-window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+msg)
+let url="https://wa.me/"+WHATSAPP_NUMBER+"?text="+message;
+
+window.open(url,"_blank");
 
 }
 
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7m4j7B6xMkC1EfS9aekBW-R6CdLatoVE&libraries=places"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7m4j7B6xMkC1EfS9aekBW-R6CdLatoVE&libraries=places&callback=initAutocomplete" async defer></script>
 
 </body>
 </html>
