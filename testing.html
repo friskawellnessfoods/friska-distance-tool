@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Friska Wellness Quote</title>
+
+<style>
+
+body{
+font-family:system-ui;
+background:#f4f6fb;
+margin:0;
+padding:20px;
+display:flex;
+justify-content:center;
+}
+
+.container{
+max-width:420px;
+width:100%;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+.section{
+margin-top:25px;
+}
+
+.hidden{
+display:none;
+}
+
+.plan-card{
+border-radius:10px;
+overflow:hidden;
+cursor:pointer;
+border:2px solid transparent;
+margin-top:12px;
+}
+
+.plan-card img{
+width:100%;
+display:block;
+}
+
+.plan-card.active{
+border:2px solid #0a1a6e;
+}
+
+label{
+display:block;
+margin-top:8px;
+}
+
+input[type="text"], input[type="tel"]{
+width:100%;
+padding:10px;
+margin-top:8px;
+}
+
+button{
+margin-top:12px;
+width:100%;
+padding:12px;
+background:#0a1a6e;
+color:white;
+border:none;
+border-radius:6px;
+font-size:16px;
+cursor:pointer;
+}
+
+#quoteResult{
+margin-top:20px;
+background:#f8f9ff;
+padding:20px;
+border-radius:10px;
+text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Friska Wellness Quote</h2>
+
+<div class="section" id="planSection">
+
+<h3>Select Plan</h3>
+
+<div class="plan-card" onclick="selectPlan(this,'nb')">
+<img src="nutri_balance.jpeg">
+</div>
+
+<div class="plan-card" onclick="selectPlan(this,'hp')">
+<img src="high_protein.jpeg">
+</div>
+
+</div>
+
+
+<div class="section hidden" id="mealSection">
+
+<h3>Select Meals</h3>
+
+<label><input type="checkbox" id="breakfast"> Breakfast</label>
+<label><input type="checkbox" id="lunch"> Lunch</label>
+<label><input type="checkbox" id="dinner"> Dinner</label>
+<label><input type="checkbox" id="snack"> Snack</label>
+<label><input type="checkbox" id="juice1"> 1 Juice</label>
+<label><input type="checkbox" id="juice2"> 2 Juices</label>
+
+</div>
+
+
+<div class="section hidden" id="durationSection">
+
+<h3>Duration</h3>
+
+<label><input type="radio" name="duration" value="d"> 2 Day Trial</label>
+<label><input type="radio" name="duration" value="w"> 1 Week</label>
+<label><input type="radio" name="duration" value="m"> 26 Days</label>
+<label><input type="radio" name="duration" value="q"> 3 Months</label>
+
+</div>
+
+
+<div class="section hidden" id="slotSection">
+
+<h3>Delivery Slot</h3>
+
+<label><input type="checkbox" id="morning"> Morning</label>
+<label><input type="checkbox" id="afternoon"> Afternoon</label>
+<label><input type="checkbox" id="evening"> Evening</label>
+
+</div>
+
+
+<div class="section hidden" id="locationSection">
+
+<h3>Delivery Location</h3>
+
+<input id="location" type="text" placeholder="Enter delivery location">
+
+</div>
+
+
+<div class="section hidden" id="contactSection">
+
+<h3>Your Details</h3>
+
+<input type="text" id="clientName" placeholder="Enter your name">
+
+<input type="tel" id="clientPhone" placeholder="Enter phone number" maxlength="10">
+
+<button onclick="generateQuote()">Submit</button>
+
+</div>
+
+
+<div id="quoteResult"></div>
+
+</div>
+
+
+<script>
+
+let selectedPlan="";
+let distance=0;
+let pricing={};
+let pricingLoaded=false;
+
+
+/* ===== TOGGLES ===== */
+
+const SHOW_PROGRESSIVE_SECTIONS = true;   // true = step-by-step UI
+const PHONE_REQUIRED = true;              // true = phone mandatory
+
+/* =================== */
+
+
+/* LOAD PRICING */
+
+fetch("https://script.google.com/macros/s/AKfycbwabaDpd5SRQFYDFl2gStNAQMiLtv1JZIZRRplU7blosoSHi87U6cuWQ7LdNhzNYdo/exec")
+.then(res=>res.json())
+.then(data=>{
+pricing=data;
+pricingLoaded=true;
+});
+
+
+function getPrice(key){
+
+if(!pricing[key]) return 0;
+
+return Number(pricing[key]);
+
+}
+
+
+/* PLAN */
+
+function selectPlan(card,plan){
+
+document.querySelectorAll(".plan-card").forEach(c=>c.classList.remove("active"));
+
+card.classList.add("active");
+
+selectedPlan=plan;
+
+if(SHOW_PROGRESSIVE_SECTIONS){
+
+document.getElementById("mealSection").classList.remove("hidden");
+document.getElementById("durationSection").classList.remove("hidden");
+document.getElementById("slotSection").classList.remove("hidden");
+document.getElementById("locationSection").classList.remove("hidden");
+
+}
+
+}
+
+
+/* SHOW ALL SECTIONS IF TOGGLE OFF */
+
+if(!SHOW_PROGRESSIVE_SECTIONS){
+
+document.getElementById("mealSection").classList.remove("hidden");
+document.getElementById("durationSection").classList.remove("hidden");
+document.getElementById("slotSection").classList.remove("hidden");
+document.getElementById("locationSection").classList.remove("hidden");
+document.getElementById("contactSection").classList.remove("hidden");
+
+}
+
+
+/* GOOGLE MAPS */
+
+let autocomplete;
+
+function initAutocomplete(){
+
+const input=document.getElementById("location");
+
+autocomplete=new google.maps.places.Autocomplete(input);
+
+autocomplete.addListener("place_changed",function(){
+
+const place=autocomplete.getPlace();
+
+calculateDistance(place.geometry.location);
+
+});
+
+}
+
+
+function calculateDistance(destination){
+
+const kitchen={lat:17.452623115758335,lng:78.41967516576499};
+
+const service=new google.maps.DistanceMatrixService();
+
+service.getDistanceMatrix({
+
+origins:[kitchen],
+destinations:[destination],
+travelMode:"DRIVING"
+
+},function(response,status){
+
+const element=response.rows[0].elements[0];
+
+distance=element.distance.value/1000;
+
+document.getElementById("contactSection").classList.remove("hidden");
+
+});
+
+}
+
+
+/* QUOTE */
+
+function generateQuote(){
+
+let name=document.getElementById("clientName").value.trim();
+let phone=document.getElementById("clientPhone").value.replace(/\D/g,'');
+
+if(distance==0){
+
+alert("Select location");
+return;
+
+}
+
+if(!name){
+
+alert("Enter name");
+return;
+
+}
+
+if(PHONE_REQUIRED && phone.length!==10){
+
+alert("Enter valid phone");
+return;
+
+}
+
+
+let breakfast=document.getElementById("breakfast").checked;
+let lunch=document.getElementById("lunch").checked;
+let dinner=document.getElementById("dinner").checked;
+let snack=document.getElementById("snack").checked;
+let juice1=document.getElementById("juice1").checked;
+let juice2=document.getElementById("juice2").checked;
+
+let morning=document.getElementById("morning").checked;
+let afternoon=document.getElementById("afternoon").checked;
+let evening=document.getElementById("evening").checked;
+
+let durationElement=document.querySelector('input[name="duration"]:checked');
+
+if(!durationElement){
+
+alert("Select duration");
+return;
+
+}
+
+let duration=durationElement.value;
+
+let durationText = {
+d: "2 Day Trial",
+w: "1 Week",
+m: "26 Days",
+q: "3 Months"
+}[duration];
+
+
+let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
+let dur=duration+"_";
+
+let foodPerDay=0;
+
+if(breakfast) foodPerDay+=getPrice(prefix+dur+"breakfast");
+
+let mealCount=0;
+if(lunch) mealCount++;
+if(dinner) mealCount++;
+
+if(mealCount==1) foodPerDay+=getPrice(prefix+dur+"lunch");
+if(mealCount==2) foodPerDay+=getPrice(prefix+dur+"combo")*2;
+
+if(snack) foodPerDay+=getPrice(prefix+dur+"snack");
+if(juice1) foodPerDay+=getPrice(prefix+dur+"juice1");
+if(juice2) foodPerDay+=getPrice(prefix+dur+"juice2")*2;
+
+
+/* DAYS */
+
+let days=2;
+if(duration=="w") days=6;
+if(duration=="m") days=26;
+if(duration=="q") days=78;
+
+let foodTotal=foodPerDay*days;
+
+
+/* DELIVERY */
+
+let trips=0;
+
+if(morning) trips++;
+if(afternoon) trips++;
+if(evening) trips++;
+
+let roundedDistance=Math.round(distance);
+
+let deliveryPerTrip=roundedDistance*getPrice("delivery");
+
+let deliveryTotal=deliveryPerTrip*trips*days;
+
+
+/* GST */
+
+let gst=foodTotal*(getPrice("gst")/100);
+
+let total=foodTotal+gst+deliveryTotal;
+
+
+/* SHOW */
+
+document.getElementById("quoteResult").innerHTML=
+
+"<div style='font-size:28px;font-weight:700;color:#0a1a6e'>₹"+total.toFixed(0)+"</div>"+
+"<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery charges & taxes</div>";
+
+
+
+/* SAVE LEAD */
+
+fetch("https://script.google.com/macros/s/AKfycbx19L4KMs7I-Eg8RxSeeppGMpePjt3DIuXxFxtAOei0PQ_pihmbGxGZJQv9fR45qQY/exec",{
+
+method:"POST",
+
+body:JSON.stringify({
+
+name:name,
+phone:phone,
+plan:selectedPlan=="nb" ? "Nutri Balance":"High Protein",
+duration:durationText,
+distance:roundedDistance,
+price:total
+
+})
+
+});
+
+}
+
+</script>
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7m4j7B6xMkC1EfS9aekBW-R6CdLatoVE&libraries=places&callback=initAutocomplete" async defer></script>
+
+</body>
+</html>
