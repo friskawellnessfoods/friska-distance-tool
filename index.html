@@ -93,8 +93,6 @@ text-align:center;
 
 <h2>Friska Wellness Quote</h2>
 
-<!-- PLAN -->
-
 <div class="section" id="planSection">
 
 <h3>Select Plan</h3>
@@ -109,7 +107,6 @@ text-align:center;
 
 </div>
 
-<!-- MEALS -->
 
 <div class="section hidden" id="mealSection">
 
@@ -124,7 +121,6 @@ text-align:center;
 
 </div>
 
-<!-- DURATION -->
 
 <div class="section hidden" id="durationSection">
 
@@ -137,7 +133,6 @@ text-align:center;
 
 </div>
 
-<!-- SLOT -->
 
 <div class="section hidden" id="slotSection">
 
@@ -149,7 +144,6 @@ text-align:center;
 
 </div>
 
-<!-- LOCATION -->
 
 <div class="section hidden" id="locationSection">
 
@@ -159,7 +153,6 @@ text-align:center;
 
 </div>
 
-<!-- CONTACT -->
 
 <div class="section hidden" id="contactSection">
 
@@ -167,18 +160,17 @@ text-align:center;
 
 <input type="text" id="clientName" placeholder="Enter your name">
 
-<input type="tel" inputmode="numeric"
-id="clientPhone"
-placeholder="Enter phone number"
-maxlength="10">
+<input type="tel" id="clientPhone" placeholder="Enter phone number" maxlength="10">
 
 <button onclick="generateQuote()">Submit</button>
 
 </div>
 
+
 <div id="quoteResult"></div>
 
 </div>
+
 
 <script>
 
@@ -188,14 +180,25 @@ let pricing={};
 let pricingLoaded=false;
 let leadSent=false;
 
-/* LOAD PRICES FROM GOOGLE SHEET */
 
-fetch("https://script.google.com/macros/s/AKfycby-HN3b9BJb-Bs-pb8-NmUUGqYcyoFCCAeeTdNPQdkEnOvrtJQD1VICPCp2mU9lbqQ/exec")
+/* LOAD PRICING FROM SHEET */
+
+fetch("https://script.google.com/macros/s/AKfycbzbQCn5EleZYDyDeNsYG8JwV0IjxyZMzYu0qBbgz0DTw2YDwuE3xWW8CrtW_wZxEMo/exec")
 .then(res=>res.json())
 .then(data=>{
 pricing=data;
 pricingLoaded=true;
 });
+
+
+function getPrice(key){
+
+if(!pricing[key]) return 0;
+
+return Number(pricing[key]);
+
+}
+
 
 /* PLAN */
 
@@ -213,6 +216,7 @@ document.getElementById("slotSection").classList.remove("hidden");
 document.getElementById("locationSection").classList.remove("hidden");
 
 }
+
 
 /* GOOGLE MAPS */
 
@@ -233,6 +237,7 @@ calculateDistance(place.geometry.location);
 });
 
 }
+
 
 function calculateDistance(destination){
 
@@ -258,13 +263,14 @@ document.getElementById("contactSection").classList.remove("hidden");
 
 }
 
+
 /* QUOTE */
 
 function generateQuote(){
 
 if(!pricingLoaded){
 
-alert("Loading prices, please try again in a moment");
+alert("Prices loading please wait");
 
 return;
 
@@ -274,19 +280,29 @@ let name=document.getElementById("clientName").value.trim();
 let phone=document.getElementById("clientPhone").value.replace(/\D/g,'');
 
 if(distance==0){
-alert("Please select location");
+
+alert("Select location");
+
 return;
+
 }
 
 if(!name){
-alert("Enter your name");
+
+alert("Enter name");
+
 return;
+
 }
 
 if(phone.length!==10){
-alert("Enter valid phone number");
+
+alert("Enter valid phone");
+
 return;
+
 }
+
 
 let breakfast=document.getElementById("breakfast").checked;
 let lunch=document.getElementById("lunch").checked;
@@ -302,8 +318,11 @@ let evening=document.getElementById("evening").checked;
 let durationElement=document.querySelector('input[name="duration"]:checked');
 
 if(!durationElement){
+
 alert("Select duration");
+
 return;
+
 }
 
 let duration=durationElement.value;
@@ -313,34 +332,24 @@ let dur=duration+"_";
 
 let foodPerDay=0;
 
-if(breakfast){
-foodPerDay+=Number(pricing[prefix+dur+"breakfast"]);
-}
+
+if(breakfast) foodPerDay+=getPrice(prefix+dur+"breakfast");
 
 let mealCount=0;
 
 if(lunch) mealCount++;
 if(dinner) mealCount++;
 
-if(mealCount==1){
-foodPerDay+=Number(pricing[prefix+dur+"lunch"]);
-}
+if(mealCount==1) foodPerDay+=getPrice(prefix+dur+"lunch");
 
-if(mealCount==2){
-foodPerDay+=Number(pricing[prefix+dur+"combo"])*2;
-}
+if(mealCount==2) foodPerDay+=getPrice(prefix+dur+"combo")*2;
 
-if(snack){
-foodPerDay+=Number(pricing[prefix+dur+"snack"]);
-}
+if(snack) foodPerDay+=getPrice(prefix+dur+"snack");
 
-if(juice1){
-foodPerDay+=Number(pricing[prefix+dur+"juice1"]);
-}
+if(juice1) foodPerDay+=getPrice(prefix+dur+"juice1");
 
-if(juice2){
-foodPerDay+=Number(pricing[prefix+dur+"juice2"])*2;
-}
+if(juice2) foodPerDay+=getPrice(prefix+dur+"juice2")*2;
+
 
 /* DAYS */
 
@@ -350,7 +359,9 @@ if(duration=="w") days=6;
 if(duration=="m") days=26;
 if(duration=="q") days=78;
 
+
 let foodTotal=foodPerDay*days;
+
 
 /* DELIVERY */
 
@@ -362,22 +373,26 @@ if(evening) trips++;
 
 let roundedDistance=Math.round(distance);
 
-let deliveryPerTrip=roundedDistance*Number(pricing.delivery);
+let deliveryPerTrip=roundedDistance*getPrice("delivery");
 
 let deliveryTotal=deliveryPerTrip*trips*days;
 
+
 /* GST */
 
-let gst=foodTotal*(pricing.gst/100);
+let gst=foodTotal*(getPrice("gst")/100);
 
 let total=foodTotal+gst+deliveryTotal;
 
-/* DISPLAY */
+
+/* SHOW PRICE */
 
 document.getElementById("quoteResult").innerHTML=
 
 "<div style='font-size:28px;font-weight:700;color:#0a1a6e'>₹"+total.toFixed(0)+"</div>"+
 "<div style='font-size:14px;margin-top:6px;color:#555'>Including delivery charges & taxes</div>";
+
+
 
 /* SAVE LEAD */
 
@@ -398,7 +413,7 @@ if(morning) slots.push("Morning");
 if(afternoon) slots.push("Afternoon");
 if(evening) slots.push("Evening");
 
-fetch("https://script.google.com/macros/s/AKfycbzbQCn5EleZYDyDeNsYG8JwV0IjxyZMzYu0qBbgz0DTw2YDwuE3xWW8CrtW_wZxEMo/exec",{
+fetch("https://script.google.com/macros/s/AKfycby-HN3b9BJb-Bs-pb8-NmUUGqYcyoFCCAeeTdNPQdkEnOvrtJQD1VICPCp2mU9lbqQ/exec",{
 
 method:"POST",
 
@@ -423,6 +438,7 @@ price:total
 }
 
 </script>
+
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7m4j7B6xMkC1EfS9aekBW-R6CdLatoVE&libraries=places&callback=initAutocomplete" async defer></script>
 
