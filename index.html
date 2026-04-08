@@ -63,6 +63,18 @@ padding:10px;
 margin-top:8px;
 }
 
+button{
+margin-top:12px;
+width:100%;
+padding:12px;
+background:#0a1a6e;
+color:white;
+border:none;
+border-radius:6px;
+font-size:16px;
+cursor:pointer;
+}
+
 #quoteResult{
 margin-top:20px;
 background:#f8f9ff;
@@ -103,12 +115,12 @@ text-align:center;
 
 <h3>Select Meals</h3>
 
-<label><input type="checkbox" id="breakfast" onchange="checkMeals()"> Breakfast</label>
-<label><input type="checkbox" id="lunch" onchange="checkMeals()"> Lunch</label>
-<label><input type="checkbox" id="dinner" onchange="checkMeals()"> Dinner</label>
-<label><input type="checkbox" id="snack" onchange="checkMeals()"> Snack</label>
-<label><input type="checkbox" id="juice1" onchange="checkMeals()"> 1 Juice</label>
-<label><input type="checkbox" id="juice2" onchange="checkMeals()"> 2 Juices</label>
+<label><input type="checkbox" id="breakfast"> Breakfast</label>
+<label><input type="checkbox" id="lunch"> Lunch</label>
+<label><input type="checkbox" id="dinner"> Dinner</label>
+<label><input type="checkbox" id="snack"> Snack</label>
+<label><input type="checkbox" id="juice1"> 1 Juice</label>
+<label><input type="checkbox" id="juice2"> 2 Juices</label>
 
 </div>
 
@@ -118,10 +130,10 @@ text-align:center;
 
 <h3>Duration</h3>
 
-<label><input type="radio" name="duration" value="d" onchange="checkDuration()"> 2 Day Trial</label>
-<label><input type="radio" name="duration" value="w" onchange="checkDuration()"> 1 Week</label>
-<label><input type="radio" name="duration" value="m" onchange="checkDuration()"> 26 Days</label>
-<label><input type="radio" name="duration" value="q" onchange="checkDuration()"> 3 Months</label>
+<label><input type="radio" name="duration" value="d"> 2 Day Trial</label>
+<label><input type="radio" name="duration" value="w"> 1 Week</label>
+<label><input type="radio" name="duration" value="m"> 26 Days</label>
+<label><input type="radio" name="duration" value="q"> 3 Months</label>
 
 </div>
 
@@ -131,9 +143,9 @@ text-align:center;
 
 <h3>Delivery Slot</h3>
 
-<label><input type="checkbox" id="morning" onchange="checkSlot()"> Morning</label>
-<label><input type="checkbox" id="afternoon" onchange="checkSlot()"> Afternoon</label>
-<label><input type="checkbox" id="evening" onchange="checkSlot()"> Evening</label>
+<label><input type="checkbox" id="morning"> Morning</label>
+<label><input type="checkbox" id="afternoon"> Afternoon</label>
+<label><input type="checkbox" id="evening"> Evening</label>
 
 </div>
 
@@ -155,24 +167,13 @@ text-align:center;
 
 <input type="text" id="clientName" placeholder="Enter your name">
 
-<input type="tel" inputmode="numeric" pattern="[0-9]*"
+<input type="tel" inputmode="numeric"
 id="clientPhone"
 placeholder="Enter phone number"
 maxlength="10">
 
-<button onclick="generateQuote()" style="
-margin-top:12px;
-width:100%;
-padding:12px;
-background:#0a1a6e;
-color:white;
-border:none;
-border-radius:6px;
-font-size:16px;
-cursor:pointer;
-">
-Submit
-</button>
+<button onclick="generateQuote()">Submit</button>
+
 </div>
 
 <div id="quoteResult"></div>
@@ -183,7 +184,16 @@ Submit
 
 let selectedPlan="";
 let distance=0;
+let pricing={};
 let leadSent=false;
+
+/* LOAD PRICES FROM GOOGLE SHEET */
+
+fetch("https://script.google.com/macros/s/AKfycbzbQCn5EleZYDyDeNsYG8JwV0IjxyZMzYu0qBbgz0DTw2YDwuE3xWW8CrtW_wZxEMo/exec")
+.then(res=>res.json())
+.then(data=>{
+pricing=data;
+});
 
 /* PLAN */
 
@@ -196,45 +206,9 @@ card.classList.add("active");
 selectedPlan=plan;
 
 document.getElementById("mealSection").classList.remove("hidden");
-
-}
-
-/* MEALS */
-
-function checkMeals(){
-
-let mealsSelected =
-document.getElementById("breakfast").checked ||
-document.getElementById("lunch").checked ||
-document.getElementById("dinner").checked ||
-document.getElementById("snack").checked ||
-document.getElementById("juice1").checked ||
-document.getElementById("juice2").checked;
-
-if(mealsSelected){
 document.getElementById("durationSection").classList.remove("hidden");
-}
-
-}
-
-/* DURATION */
-
-function checkDuration(){
 document.getElementById("slotSection").classList.remove("hidden");
-}
-
-/* SLOT */
-
-function checkSlot(){
-
-let slotSelected =
-document.getElementById("morning").checked ||
-document.getElementById("afternoon").checked ||
-document.getElementById("evening").checked;
-
-if(slotSelected){
 document.getElementById("locationSection").classList.remove("hidden");
-}
 
 }
 
@@ -282,23 +256,25 @@ document.getElementById("contactSection").classList.remove("hidden");
 
 }
 
-/* LOAD PRICING */
-
-let pricing=JSON.parse(localStorage.getItem("friskaPricing"));
-
-/* MOBILE SAFE QUOTE TRIGGER */
-
-
-
 /* QUOTE */
 
 function generateQuote(){
 
 let name=document.getElementById("clientName").value.trim();
-let phone=document.getElementById("clientPhone").value.trim();
+let phone=document.getElementById("clientPhone").value.replace(/\D/g,'');
 
-if(distance==0 || !name || phone.length!==10){
-document.getElementById("quoteResult").innerHTML="";
+if(distance==0){
+alert("Please select location");
+return;
+}
+
+if(!name){
+alert("Enter your name");
+return;
+}
+
+if(phone.length!==10){
+alert("Enter valid phone number");
 return;
 }
 
@@ -316,6 +292,7 @@ let evening=document.getElementById("evening").checked;
 let durationElement=document.querySelector('input[name="duration"]:checked');
 
 if(!durationElement){
+alert("Select duration");
 return;
 }
 
@@ -326,13 +303,9 @@ let dur=duration+"_";
 
 let foodPerDay=0;
 
-/* BREAKFAST */
-
 if(breakfast){
 foodPerDay+=Number(pricing[prefix+dur+"breakfast"]);
 }
-
-/* MEALS */
 
 let mealCount=0;
 
@@ -347,13 +320,9 @@ if(mealCount==2){
 foodPerDay+=Number(pricing[prefix+dur+"combo"])*2;
 }
 
-/* SNACK */
-
 if(snack){
 foodPerDay+=Number(pricing[prefix+dur+"snack"]);
 }
-
-/* JUICE */
 
 if(juice1){
 foodPerDay+=Number(pricing[prefix+dur+"juice1"]);
@@ -391,11 +360,9 @@ let deliveryTotal=deliveryPerTrip*trips*days;
 
 let gst=foodTotal*(pricing.gst/100);
 
-/* TOTAL */
-
 let total=foodTotal+gst+deliveryTotal;
 
-/* DISPLAY PRICE */
+/* DISPLAY */
 
 document.getElementById("quoteResult").innerHTML=
 
