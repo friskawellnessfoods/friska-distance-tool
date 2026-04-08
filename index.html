@@ -328,7 +328,35 @@ let phone=document.getElementById("clientPhone").value.replace(/\D/g,'');
 
 let durationElement=document.querySelector('input[name="duration"]:checked');
 
-if(!durationElement) return;
+let breakfast=document.getElementById("breakfast").checked;
+let lunch=document.getElementById("lunch").checked;
+let dinner=document.getElementById("dinner").checked;
+let snack=document.getElementById("snack").checked;
+let juice1=document.getElementById("juice1").checked;
+let juice2=document.getElementById("juice2").checked;
+
+let morning=document.getElementById("morning").checked;
+let afternoon=document.getElementById("afternoon").checked;
+let evening=document.getElementById("evening").checked;
+
+
+/* CHECK IF ALL REQUIRED DATA IS FILLED */
+
+let mealSelected = breakfast || lunch || dinner || snack || juice1 || juice2;
+let slotSelected = morning || afternoon || evening;
+
+if(
+!durationElement ||
+!mealSelected ||
+!slotSelected ||
+distance===0 ||
+!name ||
+(PHONE_REQUIRED && phone.length!==10)
+){
+document.getElementById("quoteResult").innerHTML="";
+document.getElementById("bookBar").style.display="none";
+return;
+}
 
 let duration=durationElement.value;
 
