@@ -356,6 +356,12 @@ return;
 }
 
 let duration=durationElement.value;
+let durationText={
+d:"2 Day Trial",
+w:"1 Week",
+m:"26 Days",
+q:"3 Months"
+}[duration];
 
 let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
 let dur=duration+"_";
