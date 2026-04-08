@@ -267,7 +267,7 @@ document.getElementById("contactSection").classList.remove("hidden");
 /* QUOTE */
 
 function generateQuote(){
-
+console.log("Selected Plan:", selectedPlan);
 
 let name=document.getElementById("clientName").value.trim();
 let phone=document.getElementById("clientPhone").value.replace(/\D/g,'');
@@ -406,7 +406,7 @@ if(morning) slots.push("Morning");
 if(afternoon) slots.push("Afternoon");
 if(evening) slots.push("Evening");
 
-fetch("https://script.google.com/macros/s/AKfycbzIB8og2YcWXzVJlSRNZ-D7Kg_3sQtc4AQvSTbrZOZxkNJnRpmqbt35TLKLIeYIv3M/exec",{
+fetch("https://script.google.com/macros/s/AKfycbx19L4KMs7I-Eg8RxSeeppGMpePjt3DIuXxFxtAOei0PQ_pihmbGxGZJQv9fR45qQY/exec",{
 
 method:"POST",
 
