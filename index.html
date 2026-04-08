@@ -407,7 +407,40 @@ let deliveryTotal=deliveryPerTrip*trips*days;
 let gst=foodTotal*(getPrice("gst")/100);
 
 let total=foodTotal+gst+deliveryTotal;
+/* SAVE LEAD TO SHEET */
 
+let meals=[];
+if(breakfast) meals.push("Breakfast");
+if(lunch) meals.push("Lunch");
+if(dinner) meals.push("Dinner");
+if(snack) meals.push("Snack");
+if(juice1) meals.push("1 Juice");
+if(juice2) meals.push("2 Juices");
+
+let slots=[];
+if(morning) slots.push("Morning");
+if(afternoon) slots.push("Afternoon");
+if(evening) slots.push("Evening");
+
+fetch("https://script.google.com/macros/s/AKfycbx19L4KMs7I-Eg8RxSeeppGMpePjt3DIuXxFxtAOei0PQ_pihmbGxGZJQv9fR45qQY/exec",{
+
+method:"POST",
+
+body:JSON.stringify({
+
+name:name,
+phone:phone,
+plan:selectedPlan=="nb" ? "Nutri Balance":"High Protein",
+meals:meals.join(", "),
+duration:durationText,
+slots:slots.join(", "),
+location:document.getElementById("location").value,
+distance:roundedDistance,
+price:total
+
+})
+
+});
 document.getElementById("quoteResult").innerHTML=
 
 "<div style='font-size:30px;font-weight:700;color:#0a1a6e'>₹"+total.toFixed(0)+"</div>"+
