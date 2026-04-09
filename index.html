@@ -166,6 +166,17 @@ font-weight:600;
 <img src="high_protein.png">
 </div>
 
+<div class="plan-card" onclick="selectPlan(this,'lc')">
+<img src="low_carb.png">
+</div>
+
+<div class="plan-card" onclick="selectPlan(this,'hc')">
+<img src="high_carb.png">
+</div>
+
+<div class="plan-card" onclick="selectPlan(this,'nc')">
+<img src="no_carb.png">
+</div>
 </div>
 
 
@@ -363,7 +374,7 @@ m:"26 Days",
 q:"3 Months"
 }[duration];
 
-let prefix=selectedPlan=="nb" ? "nb_" : "hp_";
+let prefix = selectedPlan + "_";
 let dur=duration+"_";
 
 let breakfast=document.getElementById("breakfast").checked;
@@ -436,7 +447,13 @@ body:JSON.stringify({
 
 name:name,
 phone:phone,
-plan:selectedPlan=="nb" ? "Nutri Balance":"High Protein",
+plan:{
+nb:"Nutri Balance",
+hp:"High Protein",
+lc:"Low Carb",
+hc:"High Carb",
+nc:"No Carb"
+}[selectedPlan],
 meals:meals.join(", "),
 duration:durationText,
 slots:slots.join(", "),
@@ -470,7 +487,13 @@ m:"26 Days",
 q:"3 Months"
 }[duration];
 
-let planText=selectedPlan=="nb" ? "Nutri Balance" : "High Protein";
+let planText={
+nb:"Nutri Balance",
+hp:"High Protein",
+lc:"Low Carb",
+hc:"High Carb",
+nc:"No Carb"
+}[selectedPlan];
 
 let clientName=document.getElementById("clientName").value.trim();
 
