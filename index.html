@@ -512,7 +512,9 @@ alert("Geolocation not supported");
 return;
 }
 
-navigator.geolocation.getCurrentPosition(function(position){
+navigator.geolocation.getCurrentPosition(
+
+function(position){
 
 let lat = position.coords.latitude;
 let lng = position.coords.longitude;
@@ -533,7 +535,13 @@ calculateDistance(latlng);
 
 });
 
-});
+},
+
+function(){
+alert("Unable to fetch current location. Please allow location permission.");
+}
+
+);
 
 }
 
