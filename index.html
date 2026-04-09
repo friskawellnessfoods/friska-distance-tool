@@ -307,16 +307,10 @@ document.querySelectorAll(".plan-card").forEach(c=>c.classList.remove("active"))
 
 card.classList.add("active");
 
-selectedPlan=plan;
+selectedPlan = plan;
 
-if(SHOW_PROGRESSIVE_SECTIONS){
-
+/* show next section only */
 document.getElementById("mealSection").classList.remove("hidden");
-document.getElementById("durationSection").classList.remove("hidden");
-document.getElementById("slotSection").classList.remove("hidden");
-document.getElementById("locationSection").classList.remove("hidden");
-
-}
 
 }
 
@@ -504,6 +498,27 @@ document.getElementById("quoteResult").innerHTML=
 document.getElementById("bookBar").style.display="block";
 
 }
+
+/* show duration when meals selected */
+document.querySelectorAll('#mealSection input').forEach(el=>{
+el.addEventListener('change',function(){
+document.getElementById("durationSection").classList.remove("hidden");
+});
+});
+
+/* show slot when duration selected */
+document.querySelectorAll('#durationSection input').forEach(el=>{
+el.addEventListener('change',function(){
+document.getElementById("slotSection").classList.remove("hidden");
+});
+});
+
+/* show location when slot selected */
+document.querySelectorAll('#slotSection input').forEach(el=>{
+el.addEventListener('change',function(){
+document.getElementById("locationSection").classList.remove("hidden");
+});
+});
 
 function useCurrentLocation(){
 
