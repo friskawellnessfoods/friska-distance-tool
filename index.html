@@ -616,10 +616,36 @@ document.getElementById("slotSection").classList.remove("hidden");
 });
 });
 
-/* show location when slot selected */
 document.querySelectorAll('#slotSection input').forEach(el=>{
 el.addEventListener('change',function(){
+
+let morning=document.getElementById("morning").checked;
+let afternoon=document.getElementById("afternoon").checked;
+let evening=document.getElementById("evening").checked;
+
+let lunch=document.getElementById("lunch").checked;
+let dinner=document.getElementById("dinner").checked;
+let snack=document.getElementById("snack").checked;
+
+/* check invalid combination */
+
+if(morning && !afternoon && !evening && (lunch || dinner || snack)){
+
+showPopup("Lunch, Dinner or Snack require Afternoon or Evening delivery.");
+
+/* keep location hidden */
+document.getElementById("locationSection").classList.add("hidden");
+
+return;
+
+}
+
+/* valid combination → allow next section */
+
+if(morning || afternoon || evening){
 document.getElementById("locationSection").classList.remove("hidden");
+}
+
 });
 });
 
