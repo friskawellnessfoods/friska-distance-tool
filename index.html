@@ -148,6 +148,30 @@ display:none;
 100%{transform:translateY(-50%) rotate(360deg);}
 }
 
+.toastPopup{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+padding:16px 22px;
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.15);
+font-size:15px;
+font-weight:500;
+color:#333;
+z-index:9999;
+display:none;
+max-width:280px;
+text-align:center;
+animation:popupFade .25s ease;
+}
+
+@keyframes popupFade{
+from{opacity:0; transform:translate(-50%,-60%);}
+to{opacity:1; transform:translate(-50%,-50%);}
+}
+
 button{
 margin-top:12px;
 width:100%;
@@ -608,7 +632,7 @@ if(morning && !afternoon && !evening){
 
 if(lunch || dinner || snack){
 
-alert("Lunch, Dinner or Snack require Afternoon or Evening delivery. Please select another slot.");
+showPopup("Lunch, Dinner or Snack require Afternoon or Evening delivery.");
 
 }
 
@@ -633,6 +657,22 @@ morningLabel.style.display="block";
 
 });
 });
+
+function showPopup(message){
+
+let popup=document.getElementById("toastPopup");
+let text=document.getElementById("toastMessage");
+
+text.innerText=message;
+
+popup.style.display="block";
+
+setTimeout(()=>{
+popup.style.display="none";
+},2500);
+
+}
+
 
 function useCurrentLocation(){
 
@@ -733,6 +773,10 @@ let url="https://wa.me/"+WHATSAPP_NUMBER+"?text="+message;
 window.open(url,"_blank");
 
 }
+
+<div id="toastPopup" class="toastPopup">
+<span id="toastMessage"></span>
+</div>
 
 </script>
 
