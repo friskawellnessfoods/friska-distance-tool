@@ -435,7 +435,18 @@ let juice2=document.getElementById("juice2").checked;
 let morning=document.getElementById("morning").checked;
 let afternoon=document.getElementById("afternoon").checked;
 let evening=document.getElementById("evening").checked;
+/* Morning slot restriction */
+if(morning && !afternoon && !evening){
 
+if(lunch || dinner || snack){
+
+alert("Morning slot allows only Breakfast and Juices.");
+
+return;
+
+}
+
+}
 let foodPerDay=0;
 
 if(breakfast) foodPerDay+=getPrice(prefix+dur+"breakfast");
