@@ -553,6 +553,34 @@ document.getElementById("locationSection").classList.remove("hidden");
 });
 });
 
+document.querySelectorAll('#slotSection input').forEach(el=>{
+el.addEventListener('change',function(){
+
+let morning=document.getElementById("morning").checked;
+let afternoon=document.getElementById("afternoon").checked;
+let evening=document.getElementById("evening").checked;
+
+let lunch=document.getElementById("lunch").checked;
+let dinner=document.getElementById("dinner").checked;
+let snack=document.getElementById("snack").checked;
+
+/* Morning slot restriction */
+
+if(morning && !afternoon && !evening){
+
+if(lunch || dinner || snack){
+
+alert("Lunch, Dinner or Snack cannot be delivered in Morning slot.");
+
+document.getElementById("morning").checked=false;
+
+}
+
+}
+
+});
+});
+
 function useCurrentLocation(){
 
 const spinner = document.getElementById("locationSpinner");
