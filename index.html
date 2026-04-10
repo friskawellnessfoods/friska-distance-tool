@@ -579,9 +579,10 @@ alert("Lunch, Dinner or Snack require Afternoon or Evening delivery. Please sele
 });
 });
 
-document.getElementById("breakfast").addEventListener("change",function(){
+document.querySelectorAll('#mealSection input').forEach(el=>{
+el.addEventListener('change',function(){
 
-let breakfast=this.checked;
+let breakfast=document.getElementById("breakfast").checked;
 let morningLabel=document.getElementById("morningLabel");
 let morning=document.getElementById("morning");
 
@@ -592,6 +593,7 @@ morning.checked=false;
 morningLabel.style.display="block";
 }
 
+});
 });
 
 function useCurrentLocation(){
