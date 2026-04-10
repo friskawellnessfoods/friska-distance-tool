@@ -231,7 +231,7 @@ font-weight:600;
 
 <h3>Delivery Slot</h3>
 
-<label><input type="checkbox" id="morning"> Morning</label>
+<label id="morningLabel"><input type="checkbox" id="morning"> Morning</label>
 <label><input type="checkbox" id="afternoon"> Afternoon</label>
 <label><input type="checkbox" id="evening"> Evening</label>
 
@@ -564,21 +564,34 @@ let lunch=document.getElementById("lunch").checked;
 let dinner=document.getElementById("dinner").checked;
 let snack=document.getElementById("snack").checked;
 
-/* Morning slot restriction */
+/* Morning-only warning */
 
 if(morning && !afternoon && !evening){
 
 if(lunch || dinner || snack){
 
-alert("Lunch, Dinner or Snack cannot be delivered in Morning slot.");
-
-document.getElementById("morning").checked=false;
+alert("Lunch, Dinner or Snack require Afternoon or Evening delivery. Please select another slot.");
 
 }
 
 }
 
 });
+});
+
+document.getElementById("breakfast").addEventListener("change",function(){
+
+let breakfast=this.checked;
+let morningLabel=document.getElementById("morningLabel");
+let morning=document.getElementById("morning");
+
+if(!breakfast){
+morningLabel.style.display="none";
+morning.checked=false;
+}else{
+morningLabel.style.display="block";
+}
+
 });
 
 function useCurrentLocation(){
