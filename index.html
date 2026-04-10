@@ -357,6 +357,14 @@ height:auto;
 <button onclick="bookNow()">Book Now</button>
 </div>
 
+<div class="bookBar" id="bookBar">
+<button onclick="bookNow()">Book Now</button>
+</div>
+
+<div id="toastPopup" class="toastPopup">
+<span id="toastMessage"></span>
+</div>
+
 
 <script>
 
@@ -773,10 +781,6 @@ let url="https://wa.me/"+WHATSAPP_NUMBER+"?text="+message;
 window.open(url,"_blank");
 
 }
-
-<div id="toastPopup" class="toastPopup">
-<span id="toastMessage"></span>
-</div>
 
 </script>
 
