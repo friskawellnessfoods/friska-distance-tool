@@ -845,6 +845,17 @@ menu.style.display="block";
 }
 
 
+document.addEventListener("click",function(event){
+
+let menu=document.getElementById("headerMenu");
+let button=document.querySelector(".menuButton");
+
+if(!menu.contains(event.target) && !button.contains(event.target)){
+menu.style.display="none";
+}
+
+});
+
 function openWeeklyMenu(){
 
 window.open("https://friskawellnessfoods.github.io/weekly-choice/menu.html","_blank");
