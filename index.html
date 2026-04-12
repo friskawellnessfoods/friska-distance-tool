@@ -71,26 +71,6 @@ width:100%;
 display:block;
 }
 
-.supportButton{
-position:fixed;
-right:18px;
-bottom:90px;
-width:54px;
-height:54px;
-border-radius:50%;
-background:#25D366;
-display:flex;
-align-items:center;
-justify-content:center;
-box-shadow:0 4px 14px rgba(0,0,0,0.2);
-cursor:pointer;
-z-index:999;
-}
-
-.supportButton img{
-width:28px;
-height:28px;
-}
 
 label{
 display:block;
@@ -214,6 +194,37 @@ text-align:center;
 box-shadow:0 6px 16px rgba(0,0,0,0.06);
 }
 
+.menuButton{
+position:absolute;
+left:18px;
+font-size:24px;
+cursor:pointer;
+color:#0a1a6e;
+}
+
+.headerMenu{
+position:absolute;
+top:70px;
+left:18px;
+background:white;
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.15);
+overflow:hidden;
+display:none;
+z-index:1000;
+}
+
+.headerMenu div{
+padding:12px 18px;
+cursor:pointer;
+font-size:15px;
+white-space:nowrap;
+}
+
+.headerMenu div:hover{
+background:#f5f5f5;
+}
+
 .bookBar{
 position:fixed;
 bottom:0;
@@ -244,7 +255,25 @@ font-weight:600;
 <body>
 
 <div class="header">
+
+<div class="menuButton" onclick="toggleMenu()">
+☰
+</div>
+
 <img src="logo.png" class="logo">
+
+</div>
+
+<div class="headerMenu" id="headerMenu">
+
+<div onclick="openWeeklyMenu()">
+Weekly Menu
+</div>
+
+<div onclick="contactSupport()">
+Customer Service
+</div>
+
 </div>
 
 <div class="container">
@@ -378,9 +407,6 @@ height:auto;
 <button onclick="bookNow()">Book Now</button>
 </div>
 
-<div class="bookBar" id="bookBar">
-<button onclick="bookNow()">Book Now</button>
-</div>
 
 <div id="toastPopup" class="toastPopup">
 <span id="toastMessage"></span>
@@ -534,7 +560,7 @@ if(morning && !afternoon && !evening){
 
 if(lunch || dinner || snack){
 
-alert("Morning slot allows only Breakfast and Juices.");
+showPopup("Lunch, Dinner or Snack require Afternoon or Evening delivery.");
 
 return;
 
@@ -673,32 +699,6 @@ document.getElementById("locationSection").classList.remove("hidden");
 });
 });
 
-document.querySelectorAll('#slotSection input').forEach(el=>{
-el.addEventListener('change',function(){
-
-let morning=document.getElementById("morning").checked;
-let afternoon=document.getElementById("afternoon").checked;
-let evening=document.getElementById("evening").checked;
-
-let lunch=document.getElementById("lunch").checked;
-let dinner=document.getElementById("dinner").checked;
-let snack=document.getElementById("snack").checked;
-
-/* Morning-only warning */
-
-if(morning && !afternoon && !evening){
-
-if(lunch || dinner || snack){
-
-showPopup("Lunch, Dinner or Snack require Afternoon or Evening delivery.");
-
-}
-
-}
-
-});
-});
-
 document.querySelectorAll('#mealSection input').forEach(el=>{
 el.addEventListener('change',function(){
 
@@ -832,6 +832,26 @@ window.open(url,"_blank");
 
 }
 
+function toggleMenu(){
+
+let menu=document.getElementById("headerMenu");
+
+if(menu.style.display==="block"){
+menu.style.display="none";
+}else{
+menu.style.display="block";
+}
+
+}
+
+
+function openWeeklyMenu(){
+
+window.open("YOUR_WEEKLY_MENU_LINK","_blank");
+
+}
+
+
 function contactSupport(){
 
 let message="Hello Friska Wellness,%0A%0AI would like to know more about the meal plans.";
@@ -846,10 +866,6 @@ window.open(url,"_blank");
 
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqVJgCfV0C1KBF0u1Jc02p_RHE7K7g1V8&libraries=places&callback=initAutocomplete" async defer></script>
-
-<div class="supportButton" onclick="contactSupport()">
-<img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">
-</div>
 
 </body>
 </html>
