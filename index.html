@@ -71,6 +71,27 @@ width:100%;
 display:block;
 }
 
+.supportButton{
+position:fixed;
+right:18px;
+bottom:90px;
+width:54px;
+height:54px;
+border-radius:50%;
+background:#25D366;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:0 4px 14px rgba(0,0,0,0.2);
+cursor:pointer;
+z-index:999;
+}
+
+.supportButton img{
+width:28px;
+height:28px;
+}
+
 label{
 display:block;
 background:white;
@@ -449,7 +470,10 @@ travelMode:"DRIVING"
 const element=response.rows[0].elements[0];
 
 distance = element.distance.value / 1000;
-
+if(distance > 20){
+showPopup("Delivery location is more than 20 km away. This may affect delivery timing and meal plan availability.");
+}
+  
 document.getElementById("contactSection").classList.remove("hidden");
 
 });
@@ -808,10 +832,24 @@ window.open(url,"_blank");
 
 }
 
+function contactSupport(){
+
+let message="Hello Friska Wellness,%0A%0AI would like to know more about the meal plans.";
+
+let url="https://wa.me/918400964170?text="+message;
+
+window.open(url,"_blank");
+
+}
+
 </script>
 
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqVJgCfV0C1KBF0u1Jc02p_RHE7K7g1V8&libraries=places&callback=initAutocomplete" async defer></script>
+
+<div class="supportButton" onclick="contactSupport()">
+<img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">
+</div>
 
 </body>
 </html>
