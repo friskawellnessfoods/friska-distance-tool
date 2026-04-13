@@ -279,6 +279,30 @@ color:#444;
 line-height:1.5;
 }
 
+.howCard{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.howLeft{
+display:flex;
+gap:12px;
+align-items:flex-start;
+}
+
+.howArrow{
+font-size:18px;
+color:#0a1a6e;
+opacity:0.6;
+transition:all .15s ease;
+}
+
+.howClickable:hover .howArrow{
+transform:translateX(4px);
+opacity:1;
+}
+
 .headerMenu{
 position:fixed;
 top:70px;
@@ -364,11 +388,18 @@ Customer Service
 <div class="howGrid">
 
 <div class="howCard howClickable" onclick="scrollToPlan()">
+
+<div class="howLeft">
 <div class="howNumber">1</div>
+
 <div class="howText">
 <b>Choose a Plan</b><br>
 Macros and suitability are explained on each plan banner to help you pick the right one.
 </div>
+</div>
+
+<div class="howArrow">→</div>
+
 </div>
 
 <div class="howCard">
