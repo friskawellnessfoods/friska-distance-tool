@@ -232,6 +232,16 @@ margin-bottom:12px;
 color:#111;
 }
 
+.howClickable{
+cursor:pointer;
+transition:all .15s ease;
+}
+
+.howClickable:hover{
+transform:translateY(-1px);
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
 .howGrid{
 display:flex;
 flex-direction:column;
@@ -353,10 +363,10 @@ Customer Service
 
 <div class="howGrid">
 
-<div class="howCard">
+<div class="howCard howClickable" onclick="scrollToPlan()">
 <div class="howNumber">1</div>
 <div class="howText">
-<b style="color:#0a1a6e;cursor:pointer" onclick="scrollToPlan()">Choose a Plan</b>
+<b>Choose a Plan</b><br>
 Macros and suitability are explained on each plan banner to help you pick the right one.
 </div>
 </div>
