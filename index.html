@@ -278,16 +278,6 @@ flex-direction:column;
 gap:10px;
 }
 
-.howCard{
-display:flex;
-align-items:flex-start;
-gap:12px;
-background:white;
-padding:14px;
-border-radius:12px;
-border:1px solid #eee;
-box-shadow:0 2px 8px rgba(0,0,0,0.04);
-}
 
 .howNumber{
 min-width:26px;
@@ -313,6 +303,12 @@ line-height:1.5;
 display:flex;
 justify-content:space-between;
 align-items:center;
+gap:12px;
+background:white;
+padding:14px;
+border-radius:12px;
+border:1px solid #eee;
+box-shadow:0 2px 8px rgba(0,0,0,0.04);
 }
 
 .howLeft{
@@ -390,6 +386,10 @@ font-weight:600;
 </head>
 
 <body>
+
+<div id="scrollArrow" class="scrollFloating" onclick="scrollToPlan()">
+↓
+</div>
 
 <div class="header">
 
@@ -1104,9 +1104,9 @@ arrow.style.display="flex";
 
 });
 
-<div id="scrollArrow" class="scrollFloating" onclick="scrollToPlan()">
-↓
-</div>
+document.addEventListener("DOMContentLoaded",function(){
+document.getElementById("scrollArrow").style.display="flex";
+});
 
 </script>
 
