@@ -333,7 +333,7 @@ Customer Service
 <div class="howCard">
 <div class="howNumber">1</div>
 <div class="howText">
-<b>Choose a Plan</b><br>
+<b style="color:#0a1a6e;cursor:pointer" onclick="scrollToPlan()">Choose a Plan</b>
 Macros and suitability are explained on each plan banner to help you pick the right one.
 </div>
 </div>
@@ -545,6 +545,9 @@ selectedPlan = plan;
 /* show next section only */
 document.getElementById("mealSection").classList.remove("hidden");
 
+document.getElementById("mealSection").scrollIntoView({
+behavior:"smooth"
+});
 }
 
 
@@ -749,14 +752,26 @@ document.getElementById("bookBar").style.display="block";
 /* show duration when meals selected */
 document.querySelectorAll('#mealSection input').forEach(el=>{
 el.addEventListener('change',function(){
+
 document.getElementById("durationSection").classList.remove("hidden");
+
+document.getElementById("durationSection").scrollIntoView({
+behavior:"smooth"
+});
+
 });
 });
 
 /* show slot when duration selected */
 document.querySelectorAll('#durationSection input').forEach(el=>{
 el.addEventListener('change',function(){
+
 document.getElementById("slotSection").classList.remove("hidden");
+
+document.getElementById("slotSection").scrollIntoView({
+behavior:"smooth"
+});
+
 });
 });
 
@@ -788,6 +803,9 @@ return;
 
 if(morning || afternoon || evening){
 document.getElementById("locationSection").classList.remove("hidden");
+document.getElementById("locationSection").scrollIntoView({
+behavior:"smooth"
+});
 }
 
 });
@@ -965,6 +983,12 @@ let url="https://wa.me/918400964170?text="+message;
 
 window.open(url,"_blank");
 
+}
+
+function scrollToPlan(){
+document.getElementById("planSection").scrollIntoView({
+behavior:"smooth"
+});
 }
 
 </script>
