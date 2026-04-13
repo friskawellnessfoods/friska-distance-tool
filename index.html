@@ -202,6 +202,50 @@ cursor:pointer;
 color:#0a1a6e;
 }
 
+.sectionTitle{
+font-size:20px;
+font-weight:700;
+margin-bottom:12px;
+color:#111;
+}
+
+.howGrid{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.howCard{
+display:flex;
+align-items:flex-start;
+gap:12px;
+background:white;
+padding:14px;
+border-radius:12px;
+border:1px solid #eee;
+box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+
+.howNumber{
+min-width:26px;
+height:26px;
+border-radius:50%;
+background:#0a1a6e;
+color:white;
+font-size:13px;
+font-weight:600;
+display:flex;
+align-items:center;
+justify-content:center;
+margin-top:2px;
+}
+
+.howText{
+font-size:14px;
+color:#444;
+line-height:1.5;
+}
+
 .headerMenu{
 position:fixed;
 top:70px;
@@ -279,6 +323,56 @@ Customer Service
 <div class="container">
 
 <h2>Get Your Meal Plan Details</h2>
+
+<div class="section">
+
+<h3 class="sectionTitle">How It Works</h3>
+
+<div class="howGrid">
+
+<div class="howCard">
+<div class="howNumber">1</div>
+<div class="howText">
+<b>Choose a Plan</b><br>
+Macros and suitability are explained on each plan banner to help you pick the right one.
+</div>
+</div>
+
+<div class="howCard">
+<div class="howNumber">2</div>
+<div class="howText">
+<b>Select Your Meals</b><br>
+Pick the meals you want daily based on your preference.
+</div>
+</div>
+
+<div class="howCard">
+<div class="howNumber">3</div>
+<div class="howText">
+<b>Choose Delivery Slots</b><br>
+Select delivery timings that work best for your routine.
+</div>
+</div>
+
+<div class="howCard">
+<div class="howNumber">4</div>
+<div class="howText">
+<b>Fresh Meals Delivered</b><br>
+Meals prepared fresh daily and delivered to your doorstep.
+</div>
+</div>
+
+<div class="howCard">
+<div class="howNumber">5</div>
+<div class="howText">
+<b>Flexible Subscription</b><br>
+Pause meals anytime whenever needed.
+</div>
+</div>
+
+</div>
+
+</div>
 
 <div class="section" id="planSection">
 
