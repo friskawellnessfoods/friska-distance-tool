@@ -33,17 +33,25 @@ z-index:10;
 position:fixed;
 right:14px;
 bottom:120px;
-font-size:22px;
+font-size:18px;
 color:#0a1a6e;
-opacity:0.35;
+opacity:0.6;
 cursor:pointer;
-z-index:999;
+z-index:9999;
 animation:floatBounce 1.6s infinite;
 transition:opacity .2s ease;
+background:white;
+border-radius:50%;
+width:36px;
+height:36px;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:0 4px 12px rgba(0,0,0,0.12);
 }
 
 .scrollFloating:hover{
-opacity:0.7;
+opacity:1;
 }
 
 @keyframes floatBounce{
@@ -325,6 +333,12 @@ transform:translateX(4px);
 opacity:1;
 }
 
+@media(min-width:768px){
+.scrollFloating{
+display:none;
+}
+}
+
 .headerMenu{
 position:fixed;
 top:70px;
@@ -460,13 +474,6 @@ Pause meals anytime whenever needed.
 
 </div>
 
-<div class="scrollHint">
-
-<div class="scrollText">Select your plan below</div>
-
-<div class="scrollArrow">↓</div>
-
-</div>
 
 <div class="section" id="planSection">
 
@@ -1089,19 +1096,23 @@ window.addEventListener("scroll",function(){
 
 let arrow=document.getElementById("scrollArrow");
 
-if(window.scrollY > 120){
+if(window.scrollY > 200){
 arrow.style.display="none";
+}else{
+arrow.style.display="flex";
 }
 
 });
+
+<div id="scrollArrow" class="scrollFloating" onclick="scrollToPlan()">
+↓
+</div>
 
 </script>
 
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqVJgCfV0C1KBF0u1Jc02p_RHE7K7g1V8&libraries=places&callback=initAutocomplete" async defer></script>
 
-<div id="scrollArrow" class="scrollFloating" onclick="scrollToPlan()">
-↓
-</div>
+
 </body>
 </html>
