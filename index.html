@@ -636,7 +636,7 @@ return Number(pricing[key]);
 
 
 function selectPlan(card,plan){
-
+invalidateQuote();
 document.querySelectorAll(".plan-card").forEach(c=>c.classList.remove("active"));
 
 card.classList.add("active");
@@ -704,6 +704,13 @@ document.getElementById("contactSection").classList.remove("hidden");
 
 }
 
+function invalidateQuote(){
+
+document.getElementById("quoteResult").innerHTML = "";
+
+document.getElementById("bookBar").style.display = "none";
+
+}
 
 function generateQuote(){
 
@@ -854,6 +861,8 @@ document.getElementById("bookBar").style.display="block";
 document.querySelectorAll('#mealSection input').forEach(el=>{
 el.addEventListener('change',function(){
 
+invalidateQuote(); 
+
 document.getElementById("durationSection").classList.remove("hidden");
 
 document.getElementById("durationSection").scrollIntoView({
@@ -867,6 +876,8 @@ behavior:"smooth"
 document.querySelectorAll('#durationSection input').forEach(el=>{
 el.addEventListener('change',function(){
 
+invalidateQuote();
+
 document.getElementById("slotSection").classList.remove("hidden");
 
 document.getElementById("slotSection").scrollIntoView({
@@ -878,6 +889,8 @@ behavior:"smooth"
 
 document.querySelectorAll('#slotSection input').forEach(el=>{
 el.addEventListener('change',function(){
+
+invalidateQuote();
 
 let morning=document.getElementById("morning").checked;
 let afternoon=document.getElementById("afternoon").checked;
@@ -914,6 +927,8 @@ behavior:"smooth"
 
 document.querySelectorAll('#mealSection input').forEach(el=>{
 el.addEventListener('change',function(){
+
+invalidateQuote(); 
 
 let breakfast=document.getElementById("breakfast").checked;
 let morningLabel=document.getElementById("morningLabel");
@@ -1007,6 +1022,13 @@ alert("Unable to fetch current location. Please allow location permission.");
 );
 
 }
+
+document.getElementById("location").addEventListener("input",function(){
+invalidateQuote();
+});
+
+document.getElementById("clientName").addEventListener("input",invalidateQuote);
+document.getElementById("clientPhone").addEventListener("input",invalidateQuote);
 
 function bookNow(){
 
