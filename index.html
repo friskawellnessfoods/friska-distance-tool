@@ -908,38 +908,37 @@ if(morning && !afternoon && !evening && (lunch || dinner || snack)){
 
 showPopup("Lunch, Dinner or Snack require Afternoon or Evening delivery.");
 
-/***** SINGLE MEAL MULTI SLOT CHECK *****/
-
-let mealCount = 0;
-if(breakfast) mealCount++;
-if(lunch) mealCount++;
-if(dinner) mealCount++;
-
-/* only 1 meal selected */
-if(mealCount === 1){
-
-let slotCount = 0;
-if(morning) slotCount++;
-if(afternoon) slotCount++;
-if(evening) slotCount++;
-
-if(slotCount > 1){
-
-showPopup("You have selected only one meal. Please select only one delivery slot.");
-
-/* reset current selection */
-this.checked = false;
-
-/* hide next section */
+/* keep location hidden */
 document.getElementById("locationSection").classList.add("hidden");
 
 return;
 
 }
 
-}
+/***** SINGLE MEAL MULTI SLOT VALIDATION (CORRECT) *****/
 
-/* keep location hidden */
+/* get fresh meal values */
+let breakfast=document.getElementById("breakfast").checked;
+
+let mealCount = 0;
+if(breakfast) mealCount++;
+if(lunch) mealCount++;
+if(dinner) mealCount++;
+
+/* count slots */
+let slotCount = 0;
+if(morning) slotCount++;
+if(afternoon) slotCount++;
+if(evening) slotCount++;
+
+if(mealCount === 1 && slotCount > 1){
+
+showPopup("Only one meal selected. Please choose only one delivery slot.");
+
+/* undo last click */
+this.checked = false;
+
+/* hide next section */
 document.getElementById("locationSection").classList.add("hidden");
 
 return;
