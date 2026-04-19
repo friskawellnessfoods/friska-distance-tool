@@ -24,7 +24,7 @@ padding:16px 0;
 display:flex;
 justify-content:center;
 align-items:center;
-border-bottom:1px solid #eee;Meal Plan Details
+border-bottom:1px solid #eee;
 box-shadow:0 2px 8px rgba(0,0,0,0.06);
 z-index:10;
 }
@@ -265,6 +265,8 @@ color:#111;
 .howClickable{
 cursor:pointer;
 transition:all .15s ease;
+width:100%;
+display:flex;
 }
 
 .howClickable:hover{
@@ -1118,7 +1120,7 @@ window.addEventListener("scroll",function(){
 
 let arrow=document.getElementById("scrollArrow");
 
-if(window.scrollY > 200){
+if(window.scrollY > 250){
 arrow.style.display="none";
 }else{
 arrow.style.display="flex";
