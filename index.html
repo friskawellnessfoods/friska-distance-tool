@@ -865,6 +865,42 @@ el.addEventListener('change',function(){
 
 invalidateQuote(); 
 
+/* 🔥 ADD THIS BLOCK */
+
+let breakfast=document.getElementById("breakfast").checked;
+let lunch=document.getElementById("lunch").checked;
+let dinner=document.getElementById("dinner").checked;
+
+let morning=document.getElementById("morning").checked;
+let afternoon=document.getElementById("afternoon").checked;
+let evening=document.getElementById("evening").checked;
+
+let mealCount = 0;
+if(breakfast) mealCount++;
+if(lunch) mealCount++;
+if(dinner) mealCount++;
+
+let slotCount = 0;
+if(morning) slotCount++;
+if(afternoon) slotCount++;
+if(evening) slotCount++;
+
+/* if invalid → reset slots */
+if(mealCount === 1 && slotCount > 1){
+
+showPopup("Only one meal selected. Please choose only one delivery slot.");
+
+/* reset ALL slots */
+document.getElementById("morning").checked = false;
+document.getElementById("afternoon").checked = false;
+document.getElementById("evening").checked = false;
+
+/* hide next section */
+document.getElementById("locationSection").classList.add("hidden");
+
+}
+
+/* continue normal flow */
 document.getElementById("durationSection").classList.remove("hidden");
 
 document.getElementById("durationSection").scrollIntoView({
